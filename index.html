@@ -150,6 +150,26 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue2)}
   #printDoc td.r,#printDoc th.r{text-align:right}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- FULL SCREEN RESPONSIVE LAYOUT ---------- */
+html, body { width:100%; min-width:0; min-height:100%; }
+body { margin:0; }
+#stage { width:100%; min-height:100vh; min-height:100dvh; display:block; padding:0; }
+#phone { width:100%; max-width:none; min-height:100vh; min-height:100dvh; box-shadow:none; }
+#view { width:100%; min-height:100vh; min-height:100dvh; padding-bottom:calc(86px + var(--sab)); }
+#view.noNav { padding-bottom:0; }
+#side { display:none !important; }
+#nav { left:0; transform:none; width:100%; max-width:none; }
+#sheet { left:0; width:100%; max-width:none; transform:translateY(105%); }
+#sheet.on { transform:translateY(0); }
+.body { width:100%; max-width:none; }
+@media (min-width:700px) {
+  .body { padding-left:clamp(22px,4vw,64px); padding-right:clamp(22px,4vw,64px); }
+  .note { margin-left:clamp(22px,4vw,64px); margin-right:clamp(22px,4vw,64px); }
+  .hero { padding-left:clamp(24px,4vw,64px); padding-right:clamp(24px,4vw,64px); }
+  .cta { width:calc(100% - 2 * clamp(22px,4vw,64px)); margin-left:clamp(22px,4vw,64px); margin-right:clamp(22px,4vw,64px); }
+  .cta.inline { width:100%; margin-left:0; margin-right:0; }
+}
 </style>
 </head>
 <body>
@@ -172,7 +192,9 @@ const APP_PASSCODE = '404';
 const DOC_ROW_ID = 'main_class_fund';
 const AUTH_KEY = 'classfund_auth_404';
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = (window.supabase && typeof window.supabase.createClient === 'function')
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 /* ใส่รูปของตัวเองแทนภาพวาดได้ที่นี่ เช่น IMG.piggy = 'assets/piggy.png' */
 const IMG = {};
@@ -537,4 +559,33 @@ $('fileJson').addEventListener('change',e=>{const f=e.target.files&&e.target.fil
   S=Object.assign({cls:null,students:[],rounds:[],pays:[],exps:[]},d);save();view='home';draw();toast('กู้คืนข้อมูลแล้ว')}catch(x){toast('ไฟล์สำรองไม่ถูกต้อง')}};fr.readAsText(f)});
 
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;const f=A[t.dataset.act];if(f){e.preventDefault();f(t,e)}});
-document.addEventListener('change',e=>{if(e.target.tagName==='SELECT'&&e.target.dataset.
+document.addEventListener('change',e=>{
+  if(e.target.tagName==='SELECT' && e.target.dataset.act){
+    const fn=A[e.target.dataset.act];
+    if(fn) fn(e.target,e);
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target && e.target.id==='qs'){
+    const start=e.target.selectionStart, end=e.target.selectionEnd;
+    q=e.target.value;
+    const y=window.scrollY;
+    draw();
+    const next=$('qs');
+    if(next){next.focus();try{next.setSelectionRange(start,end)}catch(_){}}
+    window.scrollTo(0,y);
+  }
+});
+
+// Start the interface immediately; cloud sync runs only after login.
+try {
+  draw();
+  if(isAuthed) loadFromCloud();
+} catch(err) {
+  console.error('Application startup error:',err);
+  const v=$('view');
+  if(v) v.innerHTML='<div style="padding:28px;font-family:Prompt,sans-serif"><h2>เปิดระบบไม่สำเร็จ</h2><p>เกิดข้อผิดพลาดระหว่างเริ่มต้นระบบ กรุณารีเฟรชหน้าเว็บ หรือตรวจสอบ Console</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px">'+String(err && err.message || err)+'</pre></div>';
+}
+</script>
+</body>
+</html>
