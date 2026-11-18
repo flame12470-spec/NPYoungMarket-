@@ -3,193 +3,269 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1e88e5">
+<meta name="theme-color" content="#b6f51a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="เงินห้อง">
 <meta name="format-detection" content="telephone=no">
 <title>เงินห้อง – ระบบเก็บเงินสำหรับเหรัญญิก</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --blue:#1e88e5;--blue2:#5bb0f5;--orange:#c8500e;--orange2:#f47a20;--cream:#fffaee;
-  --ink:#1f2a44;--muted:#6b7794;--green:#cdeed8;--greenInk:#1c6b3a;--line:#d3dbea;--bg:#eaf3ff;
-  --red:#ffe1e1;--redInk:#b3261e;--yellow:#fff0c2;--yellowInk:#8a5a00;
-  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --lime:#b6f51a;--lime-soft:#e8fca0;--green:#6fa300;--green-dark:#3f6200;
+  --bg:#f7f7f7;--card:#fff;--text:#222;--muted:#777;--line:#e6e6e6;
+  --shadow:0 4px 16px rgba(0,0,0,.06);--radius:20px;
+  --red:#ffe1e1;--redInk:#b3261e;--yellow:#fff0c2;--yellowInk:#8a5a00;--inInk:#2e7d32;--outInk:#c62828;
+  --sab:env(safe-area-inset-bottom,0px);--sat:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{-webkit-text-size-adjust:100%}
-body{font-family:'Prompt','Noto Sans Thai','Sarabun',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;min-height:100dvh;overflow-x:hidden}
+html{-webkit-text-size-adjust:100%;width:100%}
+body{font-family:'Noto Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;overflow-x:hidden;width:100%}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;touch-action:manipulation}
-input,select,textarea{font:inherit;font-size:16px;color:var(--ink)}
+input,select,textarea{font:inherit;font-size:16px;color:var(--text)}
 img{display:block;max-width:100%}
-.im{width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
 .hide{display:none!important}
-#stage{display:flex;justify-content:center;gap:40px;align-items:flex-start;min-height:100vh;min-height:100dvh}
-#phone{width:100%;max-width:440px;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;background:linear-gradient(#f5f2ff,#fdf0e6);box-shadow:0 0 40px rgba(30,60,120,.12)}
-#view{flex:1;display:flex;flex-direction:column;padding-bottom:calc(86px + var(--sab))}
-#view.noNav{padding-bottom:0}
-#side{display:none}
-@media(min-width:960px){
-  body{background:radial-gradient(circle at 15% 20%,#ffe9c4 0,transparent 35%),radial-gradient(circle at 90% 80%,#ffd0e6 0,transparent 35%),#e6efff}
-  #stage{padding:0 20px}
-  #side{display:block;width:260px;margin-top:80px;background:var(--cream);border-radius:20px 20px 20px 36px;padding:24px;box-shadow:0 14px 30px rgba(60,70,140,.15);transform:rotate(1.2deg);position:sticky;top:60px}
-  #side h4{font-size:18px;margin-bottom:6px}#side p{color:var(--muted);font-size:14px;line-height:1.6}
-  #side button{margin-top:14px;padding:10px 18px;border-radius:99px;background:var(--orange);color:#fff;font-size:14px}
-}
-/* hero */
-.hero{color:#fff;padding:calc(20px + var(--sat)) 20px 64px;border-radius:0 0 40px 40px;position:relative;
-  background-image:radial-gradient(rgba(255,255,255,.18) 1.2px,transparent 1.2px),linear-gradient(180deg,var(--blue),var(--blue2));background-size:18px 18px,100% 100%}
-.hero.orange{background-image:radial-gradient(rgba(255,255,255,.18) 1.2px,transparent 1.2px),linear-gradient(180deg,#f47a20,#fbb15c);background-size:18px 18px,100% 100%}
-.hero.green{background-image:radial-gradient(rgba(255,255,255,.18) 1.2px,transparent 1.2px),linear-gradient(180deg,#2e9e5b,#6fd19a);background-size:18px 18px,100% 100%}
-.logo{font-weight:700;font-size:26px;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
-.sync-dot{width:9px;height:9px;border-radius:50%;background:#69f0ae;display:inline-block;box-shadow:0 0 8px #69f0ae}
-.sync-dot.busy{background:#ffd740;box-shadow:0 0 8px #ffd740;animation:pulse 1s infinite}
+.money{font-variant-numeric:tabular-nums}
+.in{color:var(--inInk)}.out{color:var(--outInk)}
+.sub{color:var(--muted);font-size:13px}
+
+#view{width:100%;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding-bottom:calc(100px + var(--sab))}
+#view.noNav{padding-bottom:24px}
+.wrap{padding:0 16px}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;gap:12px;padding:calc(16px + var(--sat)) 16px 8px}
+.topbar h1{font-size:24px;flex:1;line-height:1.2}
+.topbar .actions{display:flex;gap:10px;align-items:center}
+.icon-btn{width:42px;height:42px;border-radius:14px;background:#efeff1;display:grid;place-items:center;font-size:24px;flex:none}
+.brand-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--lime);margin-right:8px;box-shadow:0 0 0 3px var(--lime-soft)}
+.sync-dot{width:10px;height:10px;border-radius:50%;background:#43d17a;display:inline-block;box-shadow:0 0 8px #43d17a}
+.sync-dot.busy{background:#ffc400;box-shadow:0 0 8px #ffc400;animation:pulse 1s infinite}
 .sync-dot.err{background:#ff5252;box-shadow:0 0 8px #ff5252}
 @keyframes pulse{50%{opacity:.4}}
-.pill{position:absolute;right:20px;top:calc(24px + var(--sat));background:rgba(255,255,255,.28);padding:6px 14px;border-radius:99px;font-size:13px;color:#fff}
-.back{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.28);color:#fff;font-size:22px;line-height:1}
-.hero h1{font-size:26px;font-weight:600;margin-top:18px;line-height:1.25;max-width:68%}
-.hero p{opacity:.92;margin-top:6px;font-size:14px;max-width:68%}
-.mascot{position:absolute;right:14px;bottom:30px;width:100px;height:100px;pointer-events:none;filter:drop-shadow(0 6px 8px rgba(0,0,0,.18));animation:bob 3s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-6px) rotate(2deg)}}
-/* cards */
-.note,.card{background:var(--cream);box-shadow:0 12px 26px rgba(60,70,140,.12);position:relative}
-.note{border-radius:22px 22px 22px 40px;padding:22px 18px;margin:-44px 18px 0;transform:rotate(-.5deg);position:relative;z-index:2}
-.note::before,.pin::before{content:"";position:absolute;left:50%;top:-12px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff9a4d,var(--orange));box-shadow:0 4px 6px rgba(0,0,0,.2);z-index:2}
-.card{border-radius:22px;padding:16px;margin-bottom:16px}
-.card.pin{margin-top:18px}.card.plain{background:#fff}
-.body{padding:18px;position:relative;z-index:2}
-.body h3{font-size:18px;margin:6px 0 12px;display:flex;justify-content:space-between;align-items:center}
-.body h3 a{font-size:13px;color:var(--orange);font-weight:400;cursor:pointer}
+.topsub{padding:0 16px 6px;color:var(--muted);font-size:14px}
+
+/* ---------- notice ---------- */
+.notice{background:#fbf6d0;padding:14px 46px 14px 18px;display:flex;gap:12px;align-items:flex-start;position:relative}
+.notice svg{flex:none;margin-top:2px}
+.notice h4{font-size:16px;margin-bottom:2px}.notice p{font-size:14px;line-height:1.5}
+.notice .close{position:absolute;right:12px;top:10px;font-size:26px;color:#8a6d00}
+
+/* ---------- profile card ---------- */
+.profile-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin:8px 16px}
+.profile-row{display:flex;align-items:center;gap:14px;padding:16px}
+.avatar{width:56px;height:56px;border-radius:50%;border:2px solid var(--lime);background:#f3ffd0;display:grid;place-items:center;font-weight:700;color:var(--green);font-size:20px;flex:none}
+.profile-row .info{flex:1;min-width:0}
+.profile-row .name{font-weight:700;font-size:17px}
+.profile-row .sub{display:block}
+.switch-btn{width:52px;height:52px;border-radius:16px;background:#eceef2;display:grid;place-items:center;font-size:22px;flex:none}
+.chips2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px}
+.chip2{border-radius:14px;padding:12px 14px;background:#f1f1f1;text-align:left}
+.chip2 small{display:block;font-size:12px;color:#556}
+.chip2 b{font-size:18px}
+.chip2.hl{background:linear-gradient(120deg,var(--lime-soft),var(--lime))}
+.promo-strip{width:100%;background:linear-gradient(90deg,#e8fffb,#19d3c5);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.promo-strip b{font-size:17px;display:block}.promo-strip small{font-size:13px}
+.promo-strip span{font-size:28px}
+
+/* ---------- banner ---------- */
+.banner{margin:12px 16px;border-radius:var(--radius);min-height:170px;background:linear-gradient(120deg,#d9ff6a,#7de3b5 60%,#4cc9f0);padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden;display:block;width:calc(100% - 32px);text-align:left;color:#173300}
+.banner small{font-size:13px;opacity:.8}
+.banner h2{font-size:24px;line-height:1.25;margin:4px 0 10px;max-width:80%}
+.banner .bar{background:rgba(255,255,255,.5);max-width:420px}
+.banner .circle{position:absolute;right:-30px;bottom:-40px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.35)}
+.banner>*{position:relative;z-index:1}.banner .circle{z-index:0}
+
+/* ---------- tile grid ---------- */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:8px 16px 16px}
+.tile{background:var(--card);border-radius:14px;padding:14px 6px;text-align:center;box-shadow:var(--shadow);border:2px solid transparent;position:relative;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:transform .1s;color:#333}
+.tile:active{transform:scale(.96)}
+.tile svg{width:42px;height:42px}
+.tile span{font-size:13.5px;line-height:1.25}
+.tag-new{position:absolute;top:0;right:0;background:linear-gradient(135deg,#ff9a3c,#ff5a36);color:#fff;font-size:11px;padding:3px 10px;border-radius:0 12px 0 14px}
+
+/* ---------- sections / cards / lists ---------- */
+.section-title{display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px}
+.section-title h3{font-size:19px}
+.section-title a{color:var(--green);font-size:14px;font-weight:500;cursor:pointer}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin:12px 16px;padding:16px}
+.cards-grid{display:grid;grid-template-columns:1fr;gap:0}
+.rcard{display:block;width:calc(100% - 32px);text-align:left;margin:10px 16px}
+.rcard .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px}
+.rcard b{font-size:16px;font-weight:600;display:block}
+.bar{height:8px;border-radius:8px;background:#ececec;overflow:hidden;margin:8px 0 6px}
+.bar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--lime),var(--green));transition:width .4s}
+.tag{display:inline-block;font-size:12px;border-radius:99px;padding:3px 11px;white-space:nowrap;font-weight:500}
+.tag.ok{background:var(--lime-soft);color:var(--green-dark)}.tag.part{background:var(--yellow);color:var(--yellowInk)}
+.tag.no{background:var(--red);color:var(--redInk)}.tag.due{background:#ffe9d6;color:#b85400}
+.list{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:4px 16px;margin:10px 16px}
+.item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border-bottom:1px dashed var(--line);text-align:left}
+.item:last-child{border:0}
+.item .no{width:34px;height:34px;border-radius:50%;background:var(--lime-soft);color:var(--green-dark);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.item .nm{flex:1;min-width:0}
+.item .nm b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .ic{width:42px;height:42px;border-radius:14px;background:#f1f6e3;display:grid;place-items:center;flex:none;overflow:hidden;color:var(--green-dark)}
+.item .ic svg{width:26px;height:26px}
+.item .ic img{width:100%;height:100%;object-fit:cover}
+.item .amt{font-weight:600;white-space:nowrap}
+.thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none}
+.empty{text-align:center;padding:30px 10px;color:var(--muted)}
+.empty svg{width:64px;height:64px;color:#bbb;margin:0 auto 8px;display:block}
+.empty b{color:var(--text);display:block}
+.empty p{margin:4px 0 12px;font-size:14px}
+
+/* ---------- segmented tabs ---------- */
+.tabs{display:flex;background:#fff;border-radius:99px;padding:6px;margin:8px 16px;box-shadow:var(--shadow)}
+.tabs button{flex:1;padding:10px 4px;border-radius:99px;font-size:14px;color:var(--muted)}
+.tabs button.on{background:var(--lime);color:#222;font-weight:600}
+
+/* ---------- forms / buttons ---------- */
 label{font-size:14px;color:var(--muted);display:block;margin:12px 0 6px}
 input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{width:100%;padding:13px 16px;border-radius:99px;border:2px solid var(--line);background:#fff;outline:none;-webkit-appearance:none;appearance:none;min-height:50px}
-select{background-image:linear-gradient(45deg,transparent 50%,#6b7794 50%),linear-gradient(135deg,#6b7794 50%,transparent 50%);background-position:calc(100% - 20px) 55%,calc(100% - 15px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:38px}
+select{background-image:linear-gradient(45deg,transparent 50%,#777 50%),linear-gradient(135deg,#777 50%,transparent 50%);background-position:calc(100% - 20px) 55%,calc(100% - 15px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:38px}
 textarea{border-radius:18px;resize:none;min-height:96px;line-height:1.7}
-input:focus,select:focus,textarea:focus{border-color:var(--blue2)}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+.search{margin:6px 16px 4px;width:calc(100% - 32px)}
 .row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
 .chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{padding:10px 16px;border-radius:99px;border:2px solid var(--line);background:#fff;font-size:15px;text-align:center;transition:.15s}
-.chip.on{background:var(--green);border-color:var(--green);color:var(--greenInk);font-weight:500}
-.cta{display:block;width:calc(100% - 36px);margin:0 18px 18px;padding:17px;border-radius:99px;background:var(--orange);color:#fff;font-size:17px;font-weight:500;box-shadow:0 10px 20px rgba(200,80,14,.3);transition:.15s;position:relative;z-index:2}
+.chip{padding:10px 16px;border-radius:99px;border:2px solid var(--line);background:#fff;font-size:15px;transition:.15s}
+.chip.on{background:var(--lime-soft);border-color:var(--lime);color:var(--green-dark);font-weight:600}
+.cta{display:block;width:calc(100% - 32px);margin:12px 16px;padding:16px;border-radius:16px;background:var(--lime);color:#222;font-size:18px;font-weight:700;transition:.15s;text-align:center}
 .cta:active,.chip:active,.btn:active{transform:scale(.97)}
-.cta:disabled{opacity:.45;box-shadow:none}.cta.ghost{background:#fff;color:var(--orange);box-shadow:none}
 .cta.inline{width:100%;margin:16px 0 0}
+.cta.ghost{background:#fff;border:2px solid var(--line)}
+.cta.danger{background:#fff;color:var(--outInk);border:2px solid #f3c6c6}
 .btns{display:flex;gap:10px;flex-wrap:wrap}
 .btn{padding:10px 18px;border-radius:99px;font-size:14px;background:#fff;border:2px solid var(--line)}
-.btn.p{background:var(--orange);border-color:var(--orange);color:#fff}.btn.sm{padding:6px 14px;font-size:13px}
-.btn.g{background:var(--green);border-color:var(--green);color:var(--greenInk)}
-.sub{color:var(--muted);font-size:13px}.hint{text-align:center;color:var(--muted);font-size:13px;margin:14px 0}
-.hint a{color:var(--orange);text-decoration:underline;cursor:pointer}
+.btn.p{background:var(--lime);border-color:var(--lime);font-weight:600}.btn.sm{padding:6px 14px;font-size:13px}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin:14px 16px;line-height:1.7}
+.hint a{color:var(--green);text-decoration:underline;cursor:pointer}
 .big{font-size:30px;font-weight:700;letter-spacing:-.5px}
-.money{font-variant-numeric:tabular-nums}
-/* login pin */
+.photo{position:relative;border-radius:18px;overflow:hidden;margin-top:12px;background:#f3f5fa}
+.photo img{width:100%;max-height:260px;object-fit:contain}
+.photo button{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff}
+.actionrow{display:flex;gap:10px;margin-top:12px}
+.actionrow button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:2px solid var(--line);border-radius:99px;padding:11px 6px;font-size:14px}
+.actionrow svg{width:22px;height:22px}
+
+/* ---------- auth / setup ---------- */
+.auth{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:calc(24px + var(--sat)) 16px 24px;background:linear-gradient(160deg,#f3ffd0 0,#f7f7f7 45%)}
+.auth-card{width:100%;max-width:520px;background:var(--card);border-radius:28px;box-shadow:0 10px 40px rgba(0,0,0,.08);padding:28px 22px}
+.auth-card .logo{text-align:center;margin-bottom:6px}
+.auth-card .logo svg{width:64px;height:64px;color:var(--green)}
+.auth-card h1{text-align:center;font-size:26px;margin-bottom:4px}
+.auth-card .lead{text-align:center;color:var(--muted);font-size:14px;margin-bottom:10px;line-height:1.6}
 .pin-input{text-align:center;font-size:28px;font-weight:700;letter-spacing:14px;padding-left:28px}
 .shake{animation:shake .35s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-/* summary */
-.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.sumgrid div{background:#fff;border-radius:16px;padding:10px 12px}
-.sumgrid small{display:block;color:var(--muted);font-size:12px}.sumgrid b{font-size:18px}
-.in{color:var(--greenInk)}.out{color:var(--redInk)}
-/* progress */
-.bar{height:10px;border-radius:9px;background:#efe6d4;overflow:hidden;margin:8px 0 4px}
-.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#4caf7a,#2e9e5b);transition:width .4s}
-.rcard{display:block;width:100%;text-align:left;background:var(--cream);border-radius:20px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 18px rgba(60,70,140,.1)}
-.rcard .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.rcard b{font-size:16px;font-weight:600}
-.tag{display:inline-block;font-size:11px;border-radius:99px;padding:2px 10px;white-space:nowrap}
-.tag.ok{background:var(--green);color:var(--greenInk)}.tag.part{background:var(--yellow);color:var(--yellowInk)}.tag.no{background:var(--red);color:var(--redInk)}.tag.due{background:#ffe4d3;color:var(--orange)}
-/* list */
-.list{background:#fff;border-radius:22px;padding:4px 16px;margin-bottom:16px}
-.item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border-bottom:1px solid #edf0f7;text-align:left}
-.item:last-child{border:0}
-.item .no{width:30px;height:30px;border-radius:50%;background:#e7f1ff;color:var(--blue);display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
-.item .nm{flex:1;min-width:0}.item .nm b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.item .ic{width:40px;height:40px;border-radius:12px;background:#fff1e6;padding:7px;flex:none}
-.item .amt{font-weight:600;white-space:nowrap}
-.search{margin-bottom:12px}
-.thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;background:#fff}
-.photo{position:relative;border-radius:18px;overflow:hidden;margin-top:12px;background:#fff}
-.photo img{width:100%;max-height:260px;object-fit:contain;background:#f3f5fa}
-.photo button{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff}
-.actionrow{display:flex;gap:10px;margin-top:12px}
-.actionrow button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:2px solid #f0d8c4;border-radius:99px;padding:11px 6px;color:var(--orange);font-size:14px}
-.actionrow .im{width:24px;height:24px}
-.tabs{display:flex;background:#fff;border-radius:99px;padding:6px;margin:-30px 18px 14px;box-shadow:0 8px 20px rgba(60,70,140,.12);position:relative;z-index:2}
-.tabs button{flex:1;padding:10px 4px;border-radius:99px;font-size:14px;color:var(--muted)}
-.tabs button.on{background:var(--orange);color:#fff}
-.empty{text-align:center;padding:26px 10px;color:var(--muted)}.empty .ic{width:84px;margin:0 auto 8px}
-/* nav */
-#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:#fff;border-radius:28px 28px 0 0;display:flex;justify-content:space-around;padding:10px 4px calc(12px + var(--sab));box-shadow:0 -6px 20px rgba(0,0,0,.07);z-index:20}
-#nav button{flex:1;font-size:11px;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:3px}
-#nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-#nav button.on{color:var(--orange)}
-#nav .plus{transform:translateY(-24px)}
-#nav .plus span{width:56px;height:56px;border-radius:50%;background:var(--orange2);display:grid;place-items:center;box-shadow:0 0 0 5px #fff,0 8px 14px rgba(244,122,32,.4);color:#fff}
-#nav .plus svg{stroke:#fff;width:28px;height:28px}
-/* sheet/toast */
-#sheetBg{position:fixed;inset:0;background:rgba(20,30,60,.45);z-index:40;opacity:0;pointer-events:none;transition:.25s}
+
+/* ---------- bottom nav (mobile/tablet) ---------- */
+#nav{position:fixed;left:0;bottom:0;width:100%;height:calc(84px + var(--sab));background:#fff;border-top:1px solid #eee;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding-bottom:calc(10px + var(--sab));z-index:20}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;color:#555}
+.tab svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--green);font-weight:700}
+.scan{position:relative}
+.scan .bubble{position:absolute;top:-34px;left:50%;transform:translateX(-50%);width:70px;height:70px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 -4px 14px rgba(0,0,0,.05)}
+.scan .bubble i{width:56px;height:56px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:#222}
+.scan span{margin-top:38px}
+
+/* ---------- sheet / toast ---------- */
+#sheetBg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:40;opacity:0;pointer-events:none;transition:.25s}
 #sheetBg.on{opacity:1;pointer-events:auto}
-#sheet{position:fixed;left:50%;bottom:0;width:100%;max-width:440px;background:var(--cream);border-radius:28px 28px 0 0;z-index:41;transform:translate(-50%,105%);transition:transform .3s;max-height:90vh;max-height:90dvh;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px 20px calc(24px + var(--sab))}
-#sheet.on{transform:translate(-50%,0)}
-#sheet .grab{width:44px;height:5px;border-radius:9px;background:#d9cfb9;margin:0 auto 14px}
-#sheet h2{font-size:21px;margin-bottom:8px}
-#toast{position:fixed;left:50%;bottom:calc(100px + var(--sab));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw;text-align:center}
+#sheet{position:fixed;left:0;right:0;bottom:0;width:100%;background:#fff;border-radius:28px 28px 0 0;z-index:41;transform:translateY(105%);transition:transform .3s;max-height:90vh;max-height:90dvh;overflow:auto;-webkit-overflow-scrolling:touch;padding:12px 20px calc(24px + var(--sab))}
+#sheet.on{transform:none}
+#sheet .grab{width:48px;height:6px;border-radius:6px;background:#ddd;margin:0 auto 14px}
+#sheet h2{font-size:22px;margin-bottom:8px}
+#sheet .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+#sheet .head button{font-size:32px;line-height:1}
+#sheet .grid{padding:0 0 8px}
+#sheet .tile{box-shadow:none;background:#fafafa}
+#sheet .list,#sheet .card{margin-left:0;margin-right:0;box-shadow:none;background:#fafafa}
+#toast{position:fixed;left:50%;bottom:calc(104px + var(--sab));transform:translate(-50%,20px);background:#222;color:#fff;padding:11px 20px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:70;width:100%;height:100%}
 .fade{animation:fade .35s}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 #printDoc{display:none}
 @media print{
   body>*{display:none!important}
-  #printDoc{display:block!important;padding:16px;font-family:'Prompt',sans-serif;color:#000;background:#fff}
+  #printDoc{display:block!important;padding:16px;font-family:'Noto Sans Thai',sans-serif;color:#000;background:#fff}
   #printDoc table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
   #printDoc th,#printDoc td{border:1px solid #888;padding:4px 6px;text-align:left}
   #printDoc td.r,#printDoc th.r{text-align:right}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* ---------- FULL SCREEN RESPONSIVE LAYOUT ---------- */
-html, body { width:100%; min-width:0; min-height:100%; }
-body { margin:0; }
-#stage { width:100%; min-height:100vh; min-height:100dvh; display:block; padding:0; }
-#phone { width:100%; max-width:none; min-height:100vh; min-height:100dvh; box-shadow:none; }
-#view { width:100%; min-height:100vh; min-height:100dvh; padding-bottom:calc(86px + var(--sab)); min-width:0; }
-#view.noNav { padding-bottom:0; }
-#side { display:none !important; }
-#nav { left:0; transform:none; width:100%; max-width:none; min-height:76px; align-items:center; padding-top:10px; padding-bottom:calc(12px + var(--sab)); }
-#nav button { min-height:48px; justify-content:center; position:relative; }
-#nav .plus { transform:translateY(-18px); }
-#nav .plus span { flex:0 0 56px; }
-#sheet { left:0; width:100%; max-width:none; transform:translateY(105%); box-sizing:border-box; }
-#sheet.on { transform:translateY(0); }
-.body { width:100%; max-width:none; position:relative; z-index:2; }
-@media (min-width:700px) {
-  .body { padding-left:clamp(22px,4vw,64px); padding-right:clamp(22px,4vw,64px); }
-  .note { margin-left:clamp(22px,4vw,64px); margin-right:clamp(22px,4vw,64px); }
-  .hero { padding-left:clamp(24px,4vw,64px); padding-right:clamp(24px,4vw,64px); }
-  .cta { width:calc(100% - 2 * clamp(22px,4vw,64px)); margin-left:clamp(22px,4vw,64px); margin-right:clamp(22px,4vw,64px); }
-  .cta.inline { width:100%; margin-left:0; margin-right:0; }
-  #nav { border-radius:28px 28px 0 0; }
+/* ---------- very small phones ---------- */
+@media(max-width:360px){
+  .grid{gap:8px;padding-left:12px;padding-right:12px}
+  .tile span{font-size:12px}.tile svg{width:36px;height:36px}
+  .banner h2{font-size:20px}
 }
 
-/* ---------- BUTTON / OVERLAP FIX ---------- */
-.hero { flex:0 0 auto; position:relative; z-index:1; }
-.note, .body, .tabs { position:relative; z-index:2; }
-@media (max-width:699px) {
-  .hero { border-radius:0 0 34px 34px; }
+/* ---------- tablet / iPad ---------- */
+@media(min-width:768px){
+  .topbar{padding:calc(24px + var(--sat)) 28px 8px}.topbar h1{font-size:30px}
+  .topsub{padding:0 28px 6px}
+  .profile-card,.banner,.card,.list,.tabs{margin-left:28px;margin-right:28px}
+  .banner{width:calc(100% - 56px);min-height:200px;padding:30px 36px}.banner h2{font-size:32px}
+  .grid{grid-template-columns:repeat(4,1fr);gap:16px;padding:12px 28px 20px}
+  .tile{min-height:130px}.tile svg{width:52px;height:52px}.tile span{font-size:15px}
+  .chips2{grid-template-columns:repeat(4,1fr)}
+  .section-title{padding:12px 32px 4px}
+  .cards-grid{grid-template-columns:1fr 1fr;padding:0 18px}
+  .rcard{width:auto;margin:10px}
+  .cta{width:calc(100% - 56px);margin-left:28px;margin-right:28px}
+  .search{margin-left:28px;margin-right:28px;width:calc(100% - 56px)}
+  .notice{padding-left:28px}
+  #sheet{left:50%;right:auto;top:50%;bottom:auto;width:min(640px,92vw);max-height:86vh;border-radius:28px;transform:translate(-50%,-46%);opacity:0;pointer-events:none;transition:.25s}
+  #sheet.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+  #sheet .grab{display:none}
+  .toast{bottom:110px}
 }
 
+/* ---------- desktop / laptop : sidebar ---------- */
+@media(min-width:1100px){
+  #view:not(.noNav){padding-left:248px;padding-bottom:40px}
+  #nav{top:0;bottom:0;left:0;width:248px;height:100vh;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:92px 16px 20px;border-top:0;border-right:1px solid var(--line)}
+  #nav::before{content:"เงินห้อง";position:absolute;top:28px;left:28px;font-weight:700;font-size:22px;color:var(--green-dark)}
+  #nav::after{content:"";position:absolute;top:36px;left:16px;width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px var(--lime-soft)}
+  .tab{flex-direction:row;gap:14px;font-size:16px;padding:12px 16px;border-radius:14px}
+  .tab svg{width:26px;height:26px}
+  .tab:hover{background:#f3f3f3}
+  .tab.on{background:var(--lime-soft)}
+  .scan{order:-1;margin-bottom:8px;background:var(--lime);color:#222;font-weight:700}
+  .scan:hover{background:var(--lime)}
+  .scan .bubble{position:static;transform:none;width:auto;height:auto;background:none;box-shadow:none}
+  .scan .bubble i{width:auto;height:auto;background:none}
+  .scan span{margin-top:0}
+  .tile:hover{border-color:var(--lime);transform:translateY(-2px)}
+  .home-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:8px;align-content:start;padding:0 20px}
+  .home-grid .notice{grid-column:1/-1;border-radius:16px;margin:20px 8px 8px}
+  .home-grid .tiles{grid-column:1/-1}
+  .home-grid .grid{grid-template-columns:repeat(8,1fr);padding-left:8px;padding-right:8px}
+  .home-grid .profile-card,.home-grid .banner{margin-left:8px;margin-right:8px}
+  .home-grid .banner{width:auto;margin-top:8px;min-height:230px}
+  .home-grid .col{min-width:0}
+  .home-grid .cards-grid{grid-template-columns:1fr;padding:0}
+  .home-grid .rcard,.home-grid .list,.home-grid .card{margin-left:8px;margin-right:8px;width:auto}
+  .home-grid .col .rcard{width:calc(100% - 16px)}
+  .pg{padding:0 20px}
+  .cards-grid{grid-template-columns:repeat(3,1fr)}
+  .list.cols{display:grid;grid-template-columns:1fr 1fr;column-gap:40px}
+  .list.cols .item:nth-last-child(2):nth-child(odd){border-bottom:0}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:8px;align-items:start}
+  #toast{bottom:40px;left:calc(50% + 124px)}
+  .cta{width:auto;min-width:260px;margin-left:28px}
+}
+@media(min-width:1600px){html{font-size:17px}}
 </style>
 </head>
 <body>
 <noscript><p style="padding:24px">กรุณาเปิดใช้งาน JavaScript เพื่อใช้งานแอป</p></noscript>
-<div id="stage">
-  <div id="phone"><main id="view"></main><nav id="nav" class="hide"></nav></div>
-  <aside id="side"><h4>เชื่อมต่อ Supabase แล้ว</h4><p>ข้อมูลทุกอย่างซิงค์ขึ้นฐานข้อมูลอัตโนมัติ เปิดดูจากเครื่องไหนก็ได้เพียงกรอกรหัสผ่านให้ถูกต้อง</p><button data-act="copyLink">คัดลอกลิงก์</button></aside>
-</div>
+<main id="view"></main>
+<nav id="nav" class="hide"></nav>
 <div id="sheetBg" data-act="closeSheet"></div><div id="sheet" role="dialog" aria-modal="true"></div>
 <div id="toast" role="status"></div><canvas id="fx"></canvas><div id="printDoc"></div>
 <input type="file" id="fileCam" accept="image/*" capture="environment" class="hide">
@@ -205,40 +281,38 @@ const DOC_ROW_ID = 'main_class_fund';
 const AUTH_KEY = 'classfund_auth_404';
 
 const sb = (window.supabase && typeof window.supabase.createClient === 'function')
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-/* ใส่รูปของตัวเองแทนภาพวาดได้ที่นี่ เช่น IMG.piggy = 'assets/piggy.png' */
-const IMG = {};
-
-const ART={
- piggy:'<ellipse cx="30" cy="38" rx="22" ry="17" fill="#ffa7c0"/><circle cx="50" cy="32" r="9" fill="#ffa7c0"/><ellipse cx="57" cy="34" rx="5" ry="4" fill="#ff7fa3"/><path d="M44 18l5 6 4-8z" fill="#ff7fa3"/><circle cx="48" cy="30" r="2" fill="#1f2a44"/><rect x="20" y="52" width="6" height="8" rx="3" fill="#ff7fa3"/><rect x="38" y="52" width="6" height="8" rx="3" fill="#ff7fa3"/><rect x="22" y="18" width="14" height="4" rx="2" fill="#c2185b"/><circle cx="30" cy="9" r="7" fill="#ffd23f" stroke="#f5a800" stroke-width="2"/>',
- coin:'<circle cx="32" cy="32" r="24" fill="#ffd23f" stroke="#f5a800" stroke-width="3"/><circle cx="32" cy="32" r="16" fill="none" stroke="#f5a800" stroke-width="2.5"/><text x="32" y="40" font-size="22" font-weight="700" text-anchor="middle" fill="#c27c00" font-family="sans-serif">฿</text>',
- wallet:'<rect x="6" y="16" width="52" height="38" rx="9" fill="#66bb6a"/><rect x="6" y="16" width="52" height="12" rx="6" fill="#4caf50"/><rect x="40" y="32" width="20" height="14" rx="7" fill="#fff"/><circle cx="47" cy="39" r="3" fill="#66bb6a"/>',
- receipt:'<path d="M14 6h36v52l-6-4-6 4-6-4-6 4-6-4-6 4z" fill="#fff" stroke="#cfd8ea" stroke-width="2.5" stroke-linejoin="round"/><path d="M22 18h20M22 28h20M22 38h12" stroke="#5bb0f5" stroke-width="3.5" stroke-linecap="round"/>',
- slip:'<rect x="12" y="6" width="40" height="52" rx="8" fill="#e8f5e9" stroke="#66bb6a" stroke-width="2.5"/><circle cx="32" cy="22" r="8" fill="#66bb6a"/><path d="M28 22l3 3 5-6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 38h24M20 46h16" stroke="#9bc99d" stroke-width="3.5" stroke-linecap="round"/>',
- student:'<circle cx="32" cy="22" r="11" fill="#ffe3c8"/><path d="M20 20a12 12 0 0 1 24 0c-6-3-18-3-24 0z" fill="#5d4037"/><path d="M12 58c0-14 9-20 20-20s20 6 20 20z" fill="#5bb0f5"/><path d="M28 38l4 6 4-6z" fill="#fff"/>',
- people:'<circle cx="22" cy="22" r="9" fill="#ffe3c8"/><circle cx="44" cy="24" r="8" fill="#ffd9b8"/><path d="M6 56c0-12 7-18 16-18s16 6 16 18z" fill="#5bb0f5"/><path d="M34 56c0-9 5-14 12-14s12 5 12 14z" fill="#f47a20"/>',
- calendar:'<rect x="8" y="12" width="48" height="44" rx="8" fill="#fff" stroke="#cfd8ea" stroke-width="2.5"/><rect x="8" y="12" width="48" height="14" rx="7" fill="#ef5350"/><path d="M20 6v10M44 6v10" stroke="#8d3a38" stroke-width="4" stroke-linecap="round"/><circle cx="22" cy="38" r="3" fill="#5bb0f5"/><circle cx="32" cy="38" r="3" fill="#5bb0f5"/><circle cx="42" cy="38" r="3" fill="#5bb0f5"/><circle cx="22" cy="48" r="3" fill="#5bb0f5"/><circle cx="32" cy="48" r="3" fill="#ffd23f"/>',
- check:'<circle cx="32" cy="32" r="24" fill="#66bb6a"/><path d="M20 33l8 8 17-18" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
- alert:'<path d="M32 6L60 56H4z" fill="#ffb74d" stroke="#f57c00" stroke-width="3" stroke-linejoin="round"/><path d="M32 24v16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="48" r="3" fill="#fff"/>',
- camera:'<rect x="6" y="18" width="52" height="36" rx="9" fill="#ffb74d"/><path d="M22 18l4-8h12l4 8z" fill="#f57c00"/><circle cx="32" cy="36" r="12" fill="#fff"/><circle cx="32" cy="36" r="7" fill="#5bb0f5"/>',
- gallery:'<rect x="6" y="10" width="52" height="44" rx="8" fill="#e3f2fd" stroke="#5bb0f5" stroke-width="3"/><circle cx="22" cy="26" r="5" fill="#ffd23f"/><path d="M8 50l16-16 10 10 8-8 14 14z" fill="#66bb6a"/>',
- chart:'<rect x="8" y="34" width="10" height="22" rx="3" fill="#5bb0f5"/><rect x="24" y="22" width="10" height="34" rx="3" fill="#66bb6a"/><rect x="40" y="10" width="10" height="46" rx="3" fill="#f47a20"/>',
- share:'<circle cx="46" cy="14" r="8" fill="#5bb0f5"/><circle cx="16" cy="32" r="8" fill="#66bb6a"/><circle cx="46" cy="50" r="8" fill="#f47a20"/><path d="M22 29l18-12M22 35l18 12" stroke="#455a64" stroke-width="3"/>',
- file:'<path d="M14 6h26l12 12v40H14z" fill="#fff" stroke="#cfd8ea" stroke-width="2.5" stroke-linejoin="round"/><path d="M40 6v12h12" fill="#e3f2fd" stroke="#cfd8ea" stroke-width="2.5" stroke-linejoin="round"/><path d="M22 32h20M22 40h20M22 48h12" stroke="#5bb0f5" stroke-width="3.5" stroke-linecap="round"/>',
- print:'<rect x="16" y="6" width="32" height="18" rx="3" fill="#fff" stroke="#cfd8ea" stroke-width="2.5"/><rect x="6" y="22" width="52" height="24" rx="7" fill="#90a4ae"/><rect x="16" y="38" width="32" height="20" rx="3" fill="#fff" stroke="#cfd8ea" stroke-width="2.5"/><circle cx="48" cy="30" r="2.5" fill="#66bb6a"/>',
- backup:'<path d="M14 40a12 12 0 0 1 4-23 16 16 0 0 1 30 4 11 11 0 0 1-2 22z" fill="#90caf9"/><path d="M32 26v20M24 38l8 8 8-8" stroke="#1565c0" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
- school:'<path d="M6 28L32 10l26 18z" fill="#ff7043"/><rect x="12" y="28" width="40" height="26" fill="#ffe0b2"/><rect x="26" y="38" width="12" height="16" rx="2" fill="#8d6e63"/><rect x="16" y="34" width="7" height="7" rx="1" fill="#90caf9"/><rect x="41" y="34" width="7" height="7" rx="1" fill="#90caf9"/>',
- lock:'<rect x="14" y="28" width="36" height="28" rx="8" fill="#ffd23f" stroke="#f5a800" stroke-width="3"/><path d="M22 28v-8a10 10 0 0 1 20 0v8" fill="none" stroke="#546e7a" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="40" r="3.5" fill="#1f2a44"/><path d="M32 42v6" stroke="#1f2a44" stroke-width="3" stroke-linecap="round"/>'
+/* ---------- icons (เส้นบาง สไตล์เดียวกับแอปต้นแบบ) ---------- */
+const IC={
+ list:'<rect x="10" y="6" width="28" height="36" rx="3"/><path d="M17 16h14M17 23h14M17 30h8"/>',
+ pay:'<rect x="5" y="12" width="38" height="26" rx="4"/><circle cx="24" cy="25" r="6"/><path d="M11 18h2M35 32h2"/>',
+ exp:'<path d="M10 6h28v36l-5-3-4 3-5-3-4 3-5-3-5 3z"/><path d="M17 16h14M17 24h14"/>',
+ people:'<circle cx="17" cy="18" r="6"/><circle cx="33" cy="20" r="5"/><path d="M5 40c0-8 5-12 12-12s12 4 12 12M30 30c7-1 13 3 13 10"/>',
+ share:'<path d="M6 10h36v24H22l-8 8v-8H6z"/><path d="M14 20h20M14 27h12"/>',
+ file:'<path d="M12 6h16l10 10v26H12z"/><path d="M28 6v10h10M18 26h14M18 33h14"/>',
+ print:'<rect x="14" y="6" width="20" height="12"/><rect x="6" y="18" width="36" height="16" rx="3"/><rect x="14" y="28" width="20" height="14"/>',
+ more:'<rect x="6" y="6" width="15" height="15" rx="3"/><rect x="27" y="6" width="15" height="15" rx="3"/><rect x="6" y="27" width="15" height="15" rx="3"/><path d="M34.5 27v15M27 34.5h15"/>',
+ sync:'<path d="M40 20A16 16 0 0 0 10 16M8 8v8h8M8 28a16 16 0 0 0 30 4M40 40v-8h-8"/>',
+ backup:'<path d="M12 32a9 9 0 0 1 2-17 12 12 0 0 1 23 3 8 8 0 0 1-2 14z"/><path d="M24 22v14M18 30l6 6 6-6"/>',
+ restore:'<path d="M12 32a9 9 0 0 1 2-17 12 12 0 0 1 23 3 8 8 0 0 1-2 14z"/><path d="M24 36V22M18 28l6-6 6 6"/>',
+ edit:'<path d="M8 40l2-9L33 8l7 7-23 23z"/><path d="M28 13l7 7"/>',
+ logout:'<path d="M20 6H8v36h12M18 24h24M34 16l8 8-8 8"/>',
+ trash:'<path d="M8 12h32M18 12V7h12v5M12 12l2 30h20l2-30M20 20v14M28 20v14"/>',
+ check:'<circle cx="24" cy="24" r="17"/><path d="m16 24 6 6 11-12"/>',
+ camera:'<rect x="6" y="14" width="36" height="26" rx="5"/><path d="M17 14l3-6h8l3 6"/><circle cx="24" cy="27" r="7"/>',
+ gallery:'<rect x="6" y="8" width="36" height="32" rx="5"/><circle cx="17" cy="19" r="3"/><path d="M8 36l12-12 8 8 6-6 8 8"/>',
+ lock:'<rect x="10" y="22" width="28" height="20" rx="5"/><path d="M16 22v-6a8 8 0 0 1 16 0v6M24 30v5"/>',
+ school:'<path d="M4 20 24 8l20 12-20 12z"/><path d="M12 25v10c0 3 6 6 12 6s12-3 12-6V25"/>',
+ coin:'<circle cx="24" cy="24" r="17"/><path d="M19 13v22M19 17h8a4 4 0 0 1 0 8h-8M19 25h9a4 4 0 0 1 0 8h-9"/>',
+ student:'<circle cx="24" cy="16" r="8"/><path d="M8 42c0-10 7-15 16-15s16 5 16 15"/>',
+ alert:'<path d="M24 5 3 41h42z"/><path d="M24 19v10M24 35v1"/>'
 };
-function artURI(n){return 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'+(ART[n]||ART.coin)+'</svg>')}
-function src(n){return IMG[n]||artURI(n)}
-function im(n,c){return '<img class="im '+(c||'')+'" src="'+src(n)+'" alt="" draggable="false">'}
-const ICON={
+const svg=(n,c)=>'<svg class="'+(c||'')+'" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||'')+'</svg>';
+const NAVIC={
  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>',
  list:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
- plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+ plus:'<svg viewBox="0 0 24 24" style="width:30px;height:30px"><path d="M12 5v14M5 12h14"/></svg>',
  out:'<svg viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>',
  cls:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6M15 15c3 0 6 1 6 5"/></svg>'
 };
@@ -246,94 +320,66 @@ const ICON={
 /* ---------- state / storage / Supabase Sync ---------- */
 const MEM={};const KEY='classfund_v1';
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return MEM[k]||null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){MEM[k]=v}}};
+const blank=()=>({cls:null,students:[],rounds:[],pays:[],exps:[]});
 let S;try{S=JSON.parse(store.get(KEY)||'null')}catch(e){S=null}
-S=Object.assign({cls:null,students:[],rounds:[],pays:[],exps:[]},S||{});
+S=Object.assign(blank(),S||{});
 
-let isAuthed = sessionStorage.getItem(AUTH_KEY) === '1';
-let isLoadingCloud = false;
-let syncState = 'ok'; // 'ok' | 'busy' | 'err'
-let isApplyingRemote = false;
+let isAuthed = (function(){try{return sessionStorage.getItem(AUTH_KEY)==='1'}catch(e){return false}})();
+let isLoadingCloud=false, syncState='ok', isApplyingRemote=false, rtStarted=false;
 
 function setSyncStatus(st){
-  syncState = st;
-  document.querySelectorAll('.sync-dot').forEach(el=>{
-    el.className = 'sync-dot' + (st==='busy'?' busy':st==='err'?' err':'');
-  });
+  syncState=st;
+  document.querySelectorAll('.sync-dot').forEach(el=>{el.className='sync-dot'+(st==='busy'?' busy':st==='err'?' err':'')});
 }
-
 async function loadFromCloud(){
-  isLoadingCloud = true;
-  draw();
-  setSyncStatus('busy');
+  isLoadingCloud=true;draw();setSyncStatus('busy');
   try{
-    const { data, error } = await sb
-      .from('class_fund_state')
-      .select('data')
-      .eq('id', DOC_ROW_ID)
-      .maybeSingle();
-
-    if(error) throw error;
-
-    if(data && data.data && data.data.cls){
-      S = Object.assign({cls:null,students:[],rounds:[],pays:[],exps:[]}, data.data);
-      store.set(KEY, JSON.stringify(S));
-    } else if (S.cls) {
-      // มีข้อมูลเก่าในเครื่อง ให้ดันขึ้น Supabase
-      await saveToCloud();
-    }
+    if(!sb)throw new Error('Supabase library not loaded');
+    const {data,error}=await sb.from('class_fund_state').select('data').eq('id',DOC_ROW_ID).maybeSingle();
+    if(error)throw error;
+    if(data&&data.data&&data.data.cls){
+      S=Object.assign(blank(),data.data);store.set(KEY,JSON.stringify(S));
+    }else if(S.cls){await saveToCloud()}
     setSyncStatus('ok');
+    subscribeRealtime();
   }catch(e){
-    console.error('Supabase load error:', e);
-    setSyncStatus('err');
+    console.error('Supabase load error:',e);setSyncStatus('err');
     toast('เชื่อมต่อฐานข้อมูลไม่ได้ ใช้ข้อมูลในเครื่องชั่วคราว');
   }finally{
-    isLoadingCloud = false;
-    view = S.cls ? 'home' : 'setup';
-    draw();
+    isLoadingCloud=false;view=S.cls?'home':'setup';draw();
   }
 }
-
 async function saveToCloud(){
-  if(isApplyingRemote) return;
+  if(isApplyingRemote||!sb)return;
   setSyncStatus('busy');
   try{
-    const { error } = await sb
-      .from('class_fund_state')
-      .upsert({
-        id: DOC_ROW_ID,
-        data: S,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' });
-    if(error) throw error;
-    setSyncStatus('ok');
+    const {error}=await sb.from('class_fund_state').upsert({id:DOC_ROW_ID,data:S,updated_at:new Date().toISOString()},{onConflict:'id'});
+    if(error)throw error;setSyncStatus('ok');
   }catch(e){
-    console.error('Supabase save error:', e);
-    setSyncStatus('err');
+    console.error('Supabase save error:',e);setSyncStatus('err');
     toast('บันทึกขึ้นคลาวด์ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตหรือตาราง SQL');
   }
 }
-
 function save(){
   try{store.set(KEY,JSON.stringify(S))}catch(e){toast('พื้นที่เก็บข้อมูลในเครื่องเต็ม')}
-  if(isAuthed) saveToCloud();
+  if(isAuthed)saveToCloud();
 }
-
 function subscribeRealtime(){
-  sb.channel('class_fund_realtime')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'class_fund_state', filter: 'id=eq.'+DOC_ROW_ID }, payload => {
-      if(!isAuthed || !payload.new || !payload.new.data) return;
-      const incoming = JSON.stringify(payload.new.data);
-      if(incoming !== JSON.stringify(S)){
-        isApplyingRemote = true;
-        S = Object.assign({cls:null,students:[],rounds:[],pays:[],exps:[]}, payload.new.data);
-        store.set(KEY, incoming);
-        if(!S.cls) view = 'setup';
-        else if(view === 'setup') view = 'home';
-        draw();
-        isApplyingRemote = false;
-      }
-    })
-    .subscribe();
+  if(rtStarted||!sb)return;rtStarted=true;
+  try{
+    sb.channel('class_fund_realtime')
+     .on('postgres_changes',{event:'*',schema:'public',table:'class_fund_state',filter:'id=eq.'+DOC_ROW_ID},payload=>{
+       if(!isAuthed||!payload.new||!payload.new.data)return;
+       const incoming=JSON.stringify(payload.new.data);
+       if(incoming!==JSON.stringify(S)){
+         isApplyingRemote=true;
+         S=Object.assign(blank(),payload.new.data);store.set(KEY,incoming);
+         if(!S.cls)view='setup';else if(view==='setup')view='home';
+         if(!$('sheet').classList.contains('on'))draw();
+         isApplyingRemote=false;
+       }
+     }).subscribe();
+  }catch(e){console.warn('realtime unavailable',e)}
 }
 
 /* ---------- helpers ---------- */
@@ -350,7 +396,7 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clear
 function openSheet(h){$('sheet').innerHTML='<div class="grab"></div>'+h;$('sheet').classList.add('on');$('sheetBg').classList.add('on');$('sheet').scrollTop=0}
 function closeSheet(){$('sheet').classList.remove('on');$('sheetBg').classList.remove('on')}
 function confetti(){const c=$('fx'),x=c.getContext&&c.getContext('2d');if(!x)return;c.width=innerWidth;c.height=innerHeight;
- const P=[...Array(50)].map(()=>({x:innerWidth/2,y:innerHeight*.6,vx:(Math.random()-.5)*12,vy:-Math.random()*14-4,r:Math.random()*6+3,c:['#f47a20','#5bb0f5','#ffd23f','#66bb6a'][Math.random()*4|0],l:55}));
+ const P=[...Array(50)].map(()=>({x:innerWidth/2,y:innerHeight*.6,vx:(Math.random()-.5)*12,vy:-Math.random()*14-4,r:Math.random()*6+3,c:['#b6f51a','#4cc9f0','#ffd23f','#6fa300'][Math.random()*4|0],l:55}));
  (function f(){x.clearRect(0,0,c.width,c.height);let a=0;P.forEach(p=>{if(p.l<=0)return;a++;p.l--;p.vy+=.5;p.x+=p.vx;p.y+=p.vy;x.globalAlpha=p.l/55;x.fillStyle=p.c;x.fillRect(p.x,p.y,p.r,p.r*1.6)});if(a)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
 
 /* ---------- photos (สลิป/ใบเสร็จ) ---------- */
@@ -364,11 +410,12 @@ function askPhoto(t,cam){photoTarget=t;const f=$(cam?'fileCam':'fileGal');f.valu
 
 /* ---------- logic ---------- */
 function paidOf(rid,sid){return S.pays.filter(p=>p.rid===rid&&p.sid===sid).reduce((a,p)=>a+p.amt,0)}
-function stat(r){const n=S.students.length;let full=0,part=0,got=0;S.students.forEach(s=>{const p=paidOf(r.id,s.id);got+=Math.min(p,r.amt)+Math.max(0,p-r.amt);if(p>=r.amt)full++;else if(p>0)part++});
+function stat(r){const n=S.students.length;let full=0,part=0,got=0;S.students.forEach(s=>{const p=paidOf(r.id,s.id);got+=p;if(p>=r.amt)full++;else if(p>0)part++});
  return {n,full,part,none:n-full-part,got,target:r.amt*n,pct:n?Math.round(full/n*100):0,over:r.due&&r.due<TODAY()}}
 const income=()=>S.pays.reduce((a,p)=>a+p.amt,0);
 const spent=()=>S.exps.reduce((a,e)=>a+e.amt,0);
 function unpaid(r){return S.students.filter(s=>paidOf(r.id,s.id)<r.amt)}
+function owedAll(){let t=0;S.rounds.forEach(r=>S.students.forEach(s=>{t+=Math.max(0,r.amt-paidOf(r.id,s.id))}));return t}
 function summaryText(){const c=S.cls;let t='สรุปเงินห้อง '+c.name+' ('+c.term+')\nอัปเดต '+fd(TODAY())+'\n';
  t+='\nรับรวม '+fm(income())+' บาท\nจ่ายรวม '+fm(spent())+' บาท\nคงเหลือ '+fm(income()-spent())+' บาท\n';
  S.rounds.forEach(r=>{const s=stat(r);t+='\n'+r.title+' ('+fm(r.amt)+' บาท/คน)\nจ่ายแล้ว '+s.full+'/'+s.n+' คน';const u=unpaid(r);if(u.length)t+='\nค้าง: '+u.map(x=>x.name).join(', ');t+='\n'});
@@ -381,144 +428,140 @@ function download(name,type,data){try{const b=new Blob([data],{type:type}),u=URL
 let view='home',curR=null,tab=0,payRid=null,q='',payDraft={rid:null,sid:null,amt:'',method:'เงินสด',date:TODAY(),slip:null},expDraft={title:'',amt:'',date:TODAY(),note:'',receipt:null};
 const NAV=[['home','home','หน้าแรก'],['rounds','list','รายการเก็บ'],['pay','plus','รับเงิน'],['exp','out','รายจ่าย'],['cls','cls','ห้องเรา']];
 const dotHtml=()=>'<span class="sync-dot '+(syncState==='busy'?'busy':syncState==='err'?'err':'')+'" title="สถานะเชื่อมต่อ Supabase"></span>';
-const hero=o=>'<div class="hero '+(o.c||'')+'" style="'+(o.pb?'padding-bottom:'+o.pb+'px':'')+'">'+(o.back?'<button class="back" data-act="go" data-v="'+o.back+'" aria-label="กลับ">‹</button>':(o.logo?'<div class="logo">เงินห้อง '+dotHtml()+'</div>':''))+(o.pill?'<span class="pill">'+o.pill+'</span>':'')+(o.h?'<h1>'+o.h+'</h1>':'')+(o.p?'<p>'+o.p+'</p>':'')+(o.m?'<div class="mascot">'+im(o.m)+'</div>':'')+'</div>';
-const empty=(i,t,s,b)=>'<div class="empty"><div class="ic">'+im(i)+'</div><b style="color:var(--ink)">'+t+'</b><p class="sub" style="margin:4px 0 12px">'+s+'</p>'+(b||'')+'</div>';
+const top=(t,o)=>{o=o||{};return '<div class="topbar">'+(o.back?'<button class="icon-btn" data-act="go" data-v="'+o.back+'" aria-label="กลับ">‹</button>':'')+'<h1>'+(o.brand?'<span class="brand-dot"></span>':'')+t+'</h1><div class="actions">'+dotHtml()+(o.right||'')+'</div></div>'+(o.sub?'<p class="topsub">'+o.sub+'</p>':'')};
+const empty=(i,t,s,b)=>'<div class="empty">'+svg(i)+'<b>'+t+'</b><p>'+(s||'')+'</p>'+(b||'')+'</div>';
+const tile=(ic,label,act,o)=>{o=o||{};return '<button class="tile" data-act="'+act+'"'+(o.v?' data-v="'+o.v+'"':'')+(o.close?' data-close="1"':'')+'>'+(o.isNew?'<span class="tag-new">ใหม่</span>':'')+svg(ic)+'<span>'+label+'</span></button>'};
 
 function V_login(){
- return hero({logo:1,h:'เข้าสู่ระบบ<br>เงินห้อง',p:'กรอกรหัสผ่านสำหรับเหรัญญิกเพื่อจัดการและซิงค์ข้อมูล',m:'lock',pb:76})+
- '<div class="note" id="loginCard" style="text-align:center;padding:28px 20px">'+
- '<label style="margin-top:0;font-size:15px">รหัสผ่านเข้าใช้งาน</label>'+
- '<input type="password" id="pinCode" class="pin-input" inputmode="numeric" maxlength="10" placeholder="•••" autocomplete="off" autofocus>'+
- '<p class="sub" style="margin-top:12px">เชื่อมต่อฐานข้อมูลออนไลน์ผ่าน Supabase</p>'+
- '</div>'+
- '<div style="flex:1"></div>'+
- '<button class="cta" data-act="login">เข้าสู่ระบบ</button>';
-}
+ return '<div class="auth"><div class="auth-card" id="loginCard"><div class="logo">'+svg('lock')+'</div><h1>เงินห้อง</h1><p class="lead">ระบบเก็บเงินสำหรับเหรัญญิก<br>กรอกรหัสผ่านเพื่อจัดการและซิงค์ข้อมูล</p>'+
+ '<label style="text-align:center">รหัสผ่านเข้าใช้งาน</label><input type="password" id="pinCode" class="pin-input" inputmode="numeric" maxlength="10" placeholder="•••" autocomplete="off" autofocus>'+
+ '<button class="cta inline" data-act="login">เข้าสู่ระบบ</button><p class="sub" style="text-align:center;margin-top:12px">เชื่อมต่อฐานข้อมูลออนไลน์ผ่าน Supabase</p></div></div>'}
 
 function V_loading(){
- return hero({logo:1,h:'กำลังโหลดข้อมูล...',p:'กำลังเชื่อมต่อและซิงค์ข้อมูลล่าสุดจาก Supabase',m:'piggy',pb:76})+
- '<div class="body"><div class="card pin" style="text-align:center;padding:32px 16px"><p class="sub">โปรดรอสักครู่...</p></div></div>';
-}
+ return '<div class="auth"><div class="auth-card" style="text-align:center"><div class="logo">'+svg('sync')+'</div><h1>กำลังโหลดข้อมูล...</h1><p class="lead">กำลังเชื่อมต่อและซิงค์ข้อมูลล่าสุดจาก Supabase<br>โปรดรอสักครู่</p></div></div>'}
 
 function V_setup(){
- return hero({logo:1,h:'เก็บเงินห้อง<br>ให้เป็นระเบียบ',p:'จดว่าใครจ่ายแล้ว ใครค้าง แนบสลิป และดูยอดคงเหลือได้ทันที',m:'piggy',pb:76})+
- '<div class="note"><label style="margin-top:0">ชื่อห้อง</label><input type="text" id="sc" placeholder="เช่น ม.3/2" maxlength="30" autocomplete="off">'+
+ return '<div class="auth"><div class="auth-card"><div class="logo">'+svg('school')+'</div><h1>เก็บเงินห้องให้เป็นระเบียบ</h1><p class="lead">จดว่าใครจ่ายแล้ว ใครค้าง แนบสลิป และดูยอดคงเหลือได้ทันที</p>'+
+ '<label style="margin-top:0">ชื่อห้อง</label><input type="text" id="sc" placeholder="เช่น ม.3/2" maxlength="30" autocomplete="off">'+
  '<div class="row"><div><label>ภาคเรียน/ปี</label><input type="text" id="st" placeholder="เช่น 2/2569" maxlength="20"></div><div><label>ชื่อเหรัญญิก</label><input type="text" id="sn" placeholder="ชื่อเล่น" maxlength="30"></div></div>'+
- '<label>รายชื่อนักเรียน (วางหรือพิมพ์ ชื่อละบรรทัด)</label><textarea id="sr" placeholder="1 สมชาย ใจดี&#10;2 สมหญิง รักเรียน" style="min-height:130px"></textarea><p class="sub" style="margin-top:6px">เลขนำหน้าจะถูกตัดออกให้เอง เพิ่ม/แก้ไขทีหลังได้</p></div>'+
- '<p class="hint">ข้อมูลจะถูกซิงค์ขึ้น Supabase อัตโนมัติ<br><a data-act="importJson">กู้คืนจากไฟล์สำรอง</a> · <a data-act="logout">ออกจากระบบ</a></p><div style="flex:1"></div><button class="cta" data-act="setup">เริ่มใช้งาน</button>'}
+ '<label>รายชื่อนักเรียน (วางหรือพิมพ์ ชื่อละบรรทัด)</label><textarea id="sr" placeholder="1 สมชาย ใจดี&#10;2 สมหญิง รักเรียน" style="min-height:130px"></textarea><p class="sub" style="margin-top:6px">เลขนำหน้าจะถูกตัดออกให้เอง เพิ่ม/แก้ไขทีหลังได้</p>'+
+ '<button class="cta inline" data-act="setup">เริ่มใช้งาน</button><p class="hint" style="margin:14px 0 0"><a data-act="importJson">กู้คืนจากไฟล์สำรอง</a> · <a data-act="logout">ออกจากระบบ</a></p></div></div>'}
 
 function V_home(){
- const c=S.cls,inc=income(),out=spent(),bal=inc-out,act=S.rounds.filter(r=>stat(r).full<S.students.length);
- const recent=S.pays.map(p=>({t:'in',d:p.date,id:p.id,p:p})).concat(S.exps.map(e=>({t:'out',d:e.date,id:e.id,e:e}))).sort((a,b)=>a.d<b.d?1:-1).slice(0,5);
- return hero({logo:1,pill:esc(c.name),h:'เหรัญญิก '+esc(c.treasurer||''),p:'ภาคเรียน '+esc(c.term||'-'),m:'piggy',pb:96})+
- '<div class="body" style="margin-top:-60px;padding-bottom:0"><div class="card pin fade"><span class="sub">เงินคงเหลือของห้อง</span><div class="big money '+(bal<0?'out':'')+'">'+fm(bal)+' <span style="font-size:15px;font-weight:400">บาท</span></div>'+
- '<div class="sumgrid"><div><small>รับรวม</small><b class="in money">+'+fm(inc)+'</b></div><div><small>จ่ายรวม</small><b class="out money">-'+fm(out)+'</b></div></div></div>'+
- '<h3>รายการที่กำลังเก็บ <a data-act="go" data-v="rounds">ดูทั้งหมด ›</a></h3>'+
- (act.length?act.map(rcardHtml).join(''):empty('check','ยังไม่มีรายการที่ค้างเก็บ',S.rounds.length?'ทุกคนจ่ายครบทุกรายการแล้ว':'เริ่มสร้างรายการเก็บเงินแรก','<button class="btn p" data-act="newRound">+ สร้างรายการเก็บ</button>'))+
- '<h3>ความเคลื่อนไหวล่าสุด</h3>'+(recent.length?'<div class="list">'+recent.map(x=>x.t==='in'?txIn(x.p):txOut(x.e)).join('')+'</div>':'<div class="list"><p class="sub" style="padding:16px 0;text-align:center">ยังไม่มีรายการรับ-จ่าย</p></div>')+
- '<button class="btn p" style="width:100%;padding:14px;margin-bottom:16px" data-act="shareSum">คัดลอกสรุปส่งกลุ่มไลน์</button></div>'}
-function txIn(p){const s=S.students.find(x=>x.id===p.sid),r=S.rounds.find(x=>x.id===p.rid);return '<button class="item" data-act="viewPay" data-id="'+p.id+'"><div class="ic">'+(p.slip?'<img class="thumb" style="width:100%;height:100%" src="'+p.slip+'" alt="">':im('coin'))+'</div><div class="nm"><b>'+esc(s?s.name:'(ลบแล้ว)')+'</b><span class="sub">'+esc(r?r.title:'')+' · '+fd(p.date)+' · '+esc(p.method)+'</span></div><span class="amt in money">+'+fm(p.amt)+'</span></button>'}
-function txOut(e){return '<button class="item" data-act="viewExp" data-id="'+e.id+'"><div class="ic">'+(e.receipt?'<img class="thumb" style="width:100%;height:100%" src="'+e.receipt+'" alt="">':im('receipt'))+'</div><div class="nm"><b>'+esc(e.title)+'</b><span class="sub">'+fd(e.date)+'</span></div><span class="amt out money">-'+fm(e.amt)+'</span></button>'}
-function rcardHtml(r){const s=stat(r);return '<button class="rcard fade" data-act="openRound" data-id="'+r.id+'"><div class="top"><div><b>'+esc(r.title)+'</b><div class="sub">'+fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due)+'</div></div>'+(s.over&&s.full<s.n?'<span class="tag no">เลยกำหนด</span>':s.full===s.n&&s.n?'<span class="tag ok">ครบแล้ว</span>':'<span class="tag due">กำลังเก็บ</span>')+'</div><div class="bar"><i style="width:'+s.pct+'%"></i></div><div class="sub">จ่ายแล้ว '+s.full+'/'+s.n+' คน · เก็บได้ <span class="money">'+fm(s.got)+'</span> จาก '+fm(s.target)+'</div></button>'}
+ const c=S.cls,inc=income(),out=spent(),bal=inc-out,owed=owedAll();
+ const act=S.rounds.filter(r=>stat(r).full<S.students.length).sort((a,b)=>(a.due||'9999')<(b.due||'9999')?-1:1);
+ const late=S.rounds.filter(r=>{const s=stat(r);return s.over&&s.full<s.n});
+ const recent=S.pays.map(p=>({t:'in',d:p.date,p:p})).concat(S.exps.map(e=>({t:'out',d:e.date,e:e}))).sort((a,b)=>a.d<b.d?1:-1).slice(0,6);
+ let notice='';
+ if(late.length)notice='<div class="notice" id="notice"><svg width="30" height="30" viewBox="0 0 24 24" fill="#3a3000"><path d="M12 2 1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V9h2v4z"/></svg><div><h4>มีรายการเลยกำหนดเก็บ '+late.length+' รายการ</h4><p>'+late.map(r=>esc(r.title)).join(', ')+'</p></div><button class="close" data-act="closeNotice">×</button></div>';
+ else if(syncState==='err')notice='<div class="notice" id="notice"><svg width="30" height="30" viewBox="0 0 24 24" fill="#3a3000"><path d="M12 2 1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V9h2v4z"/></svg><div><h4>ซิงค์ข้อมูลไม่สำเร็จ</h4><p>กำลังใช้ข้อมูลในเครื่อง ตรวจสอบอินเทอร์เน็ตแล้วกดปุ่มซิงค์</p></div><button class="close" data-act="closeNotice">×</button></div>';
+ const first=act[0],fs=first?stat(first):null;
+ const banner=first?'<button class="banner" data-act="openRound" data-id="'+first.id+'"><small>กำลังเก็บ · กำหนด '+fd(first.due)+'</small><h2>'+esc(first.title)+'</h2><div class="bar"><i style="width:'+fs.pct+'%"></i></div><small>จ่ายแล้ว '+fs.full+'/'+fs.n+' คน · เก็บได้ <span class="money">'+fm(fs.got)+'</span> จาก '+fm(fs.target)+' บาท</small><div class="circle"></div></button>'
+  :'<button class="banner" data-act="newRound"><small>'+(S.rounds.length?'ทุกคนจ่ายครบทุกรายการแล้ว 🎉':'ยังไม่มีรายการเก็บเงิน')+'</small><h2>+ สร้างรายการเก็บเงินใหม่</h2><small>ค่าเทอม ค่ากิจกรรม ค่าถ่ายเอกสาร ฯลฯ</small><div class="circle"></div></button>';
+ return top('เงินห้อง',{brand:1})+
+ '<div class="home-grid">'+notice+
+ '<div class="profile-card"><div class="profile-row"><div class="avatar">'+esc((c.name||'?').slice(0,3))+'</div><div class="info"><div class="name">ห้อง '+esc(c.name)+'</div><span class="sub">ภาคเรียน '+esc(c.term||'-')+' · เหรัญญิก '+esc(c.treasurer||'-')+'</span></div><button class="switch-btn" data-act="syncNow" aria-label="ซิงค์ข้อมูล">⇆</button></div>'+
+ '<div class="chips2"><div class="chip2 hl"><small>เงินคงเหลือ</small><b class="money '+(bal<0?'out':'')+'">'+fm(bal)+'</b></div><div class="chip2"><small>ค้างเก็บรวม</small><b class="money">'+fm(owed)+'</b></div><div class="chip2"><small>รับรวม</small><b class="money in">+'+fm(inc)+'</b></div><div class="chip2"><small>จ่ายรวม</small><b class="money out">-'+fm(out)+'</b></div></div>'+
+ '<button class="promo-strip" data-act="shareSum"><div><b>สรุปส่งกลุ่มไลน์</b><small>คัดลอกยอดรับ-จ่าย และรายชื่อคนค้าง</small></div><span>›</span></button></div>'+
+ banner+
+ '<div class="tiles"><div class="grid">'+
+  tile('list','รายการเก็บ','go',{v:'rounds'})+tile('pay','รับเงิน','go',{v:'pay'})+tile('exp','รายจ่าย','go',{v:'exp'})+tile('people','รายชื่อ<br>นักเรียน','go',{v:'cls'})+
+  tile('share','สรุป<br>ส่งไลน์','shareSum')+tile('file','ส่งออก<br>CSV','csv')+tile('print','พิมพ์<br>รายงาน','printRep')+tile('more','เพิ่มเติม','more',{isNew:1})+
+ '</div></div>'+
+ '<div class="col"><div class="section-title"><h3>รายการที่กำลังเก็บ</h3><a data-act="go" data-v="rounds">ดูทั้งหมด ›</a></div>'+
+ (act.length?'<div class="cards-grid">'+act.map(rcardHtml).join('')+'</div>':'<div class="card">'+empty('check','ยังไม่มีรายการที่ค้างเก็บ',S.rounds.length?'ทุกคนจ่ายครบทุกรายการแล้ว':'เริ่มสร้างรายการเก็บเงินแรก','<button class="btn p" data-act="newRound">+ สร้างรายการเก็บ</button>')+'</div>')+'</div>'+
+ '<div class="col"><div class="section-title"><h3>ความเคลื่อนไหวล่าสุด</h3></div>'+(recent.length?'<div class="list">'+recent.map(x=>x.t==='in'?txIn(x.p):txOut(x.e)).join('')+'</div>':'<div class="card"><p class="sub" style="text-align:center;padding:10px 0">ยังไม่มีรายการรับ-จ่าย</p></div>')+'</div>'+
+ '</div>'}
+function txIn(p){const s=S.students.find(x=>x.id===p.sid),r=S.rounds.find(x=>x.id===p.rid);return '<button class="item" data-act="viewPay" data-id="'+p.id+'"><div class="ic">'+(p.slip?'<img src="'+p.slip+'" alt="">':svg('coin'))+'</div><div class="nm"><b>'+esc(s?s.name:'(ลบแล้ว)')+'</b><span class="sub">'+esc(r?r.title:'')+' · '+fd(p.date)+' · '+esc(p.method)+'</span></div><span class="amt in money">+'+fm(p.amt)+'</span></button>'}
+function txOut(e){return '<button class="item" data-act="viewExp" data-id="'+e.id+'"><div class="ic">'+(e.receipt?'<img src="'+e.receipt+'" alt="">':svg('exp'))+'</div><div class="nm"><b>'+esc(e.title)+'</b><span class="sub">'+fd(e.date)+'</span></div><span class="amt out money">-'+fm(e.amt)+'</span></button>'}
+function rcardHtml(r){const s=stat(r);return '<button class="card rcard fade" data-act="openRound" data-id="'+r.id+'"><div class="top"><div><b>'+esc(r.title)+'</b><span class="sub">'+fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due)+'</span></div>'+(s.over&&s.full<s.n?'<span class="tag no">เลยกำหนด</span>':s.full===s.n&&s.n?'<span class="tag ok">ครบแล้ว</span>':'<span class="tag due">กำลังเก็บ</span>')+'</div><div class="bar"><i style="width:'+s.pct+'%"></i></div><div class="sub">จ่ายแล้ว '+s.full+'/'+s.n+' คน · เก็บได้ <span class="money">'+fm(s.got)+'</span> จาก '+fm(s.target)+'</div></button>'}
 
-function V_rounds(){return hero({c:'orange',back:'home',h:'รายการเก็บเงิน',p:'ค่าเทอม ค่ากิจกรรม ค่าถ่ายเอกสาร ฯลฯ',m:'wallet',pb:70})+
- '<div class="body" style="margin-top:0"><button class="cta" style="width:100%;margin:0 0 16px" data-act="newRound">+ สร้างรายการเก็บใหม่</button>'+(S.rounds.length?S.rounds.slice().reverse().map(rcardHtml).join(''):empty('list','ยังไม่มีรายการเก็บเงิน','กดปุ่มด้านบนเพื่อสร้างรายการแรก'))+'</div>'}
+function V_rounds(){return top('รายการเก็บเงิน',{back:'home',sub:'ค่าเทอม ค่ากิจกรรม ค่าถ่ายเอกสาร ฯลฯ'})+
+ '<button class="cta" data-act="newRound">+ สร้างรายการเก็บใหม่</button>'+
+ (S.rounds.length?'<div class="cards-grid">'+S.rounds.slice().reverse().map(rcardHtml).join('')+'</div>':'<div class="card">'+empty('list','ยังไม่มีรายการเก็บเงิน','กดปุ่มด้านบนเพื่อสร้างรายการแรก')+'</div>')}
 
 function V_round(){const r=S.rounds.find(x=>x.id===curR);if(!r){view='rounds';return V_rounds()}
  const s=stat(r);let list=S.students.filter(x=>!q||x.name.indexOf(q)>-1);
  if(tab===1)list=list.filter(x=>paidOf(r.id,x.id)<r.amt);if(tab===2)list=list.filter(x=>paidOf(r.id,x.id)>=r.amt);
- return hero({c:'green',back:'rounds',h:esc(r.title),p:fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due),m:'coin',pb:90})+
+ return top(esc(r.title),{back:'rounds',sub:fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due)})+
+ '<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><b>เก็บได้ <span class="money">'+fm(s.got)+'</span> / '+fm(s.target)+'</b><span class="sub">'+s.pct+'%</span></div><div class="bar"><i style="width:'+s.pct+'%"></i></div><div class="btns" style="margin-top:8px"><button class="btn sm" data-act="copyUnpaid">คัดลอกรายชื่อคนค้าง</button><button class="btn sm" data-act="editRound">แก้ไข</button></div></div>'+
  '<div class="tabs">'+['ทั้งหมด ('+s.n+')','ค้าง ('+(s.n-s.full)+')','จ่ายแล้ว ('+s.full+')'].map((t,i)=>'<button class="'+(tab===i?'on':'')+'" data-act="tab" data-v="'+i+'">'+t+'</button>').join('')+'</div>'+
- '<div class="body" style="padding-top:0"><div class="card plain"><div style="display:flex;justify-content:space-between"><b>เก็บได้ <span class="money">'+fm(s.got)+'</span> / '+fm(s.target)+'</b><span class="sub">'+s.pct+'%</span></div><div class="bar"><i style="width:'+s.pct+'%"></i></div><div class="btns" style="margin-top:8px"><button class="btn sm" data-act="copyUnpaid">คัดลอกรายชื่อคนค้าง</button><button class="btn sm" data-act="editRound">แก้ไข</button></div></div>'+
  '<input type="text" class="search" id="qs" value="'+esc(q)+'" placeholder="ค้นหาชื่อ" autocomplete="off">'+
- (list.length?'<div class="list">'+list.map(x=>{const p=paidOf(r.id,x.id),st=p>=r.amt?'ok':p>0?'part':'no';return '<button class="item" data-act="payFor" data-rid="'+r.id+'" data-sid="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b><span class="sub money">'+(p?'จ่ายแล้ว '+fm(p)+(p<r.amt?' · ค้าง '+fm(r.amt-p):''):'ยังไม่จ่าย')+'</span></div><span class="tag '+st+'">'+(st==='ok'?'จ่ายแล้ว':st==='part'?'บางส่วน':'ค้าง')+'</span></button>'}).join('')+'</div>':empty('student','ไม่พบรายชื่อ',S.students.length?'ลองเปลี่ยนตัวกรอง':'เพิ่มรายชื่อนักเรียนที่เมนู "ห้องเรา"'))+'</div>'}
+ (list.length?'<div class="list cols">'+list.map(x=>studentRow(r,x)).join('')+'</div>':'<div class="card">'+empty('student','ไม่พบรายชื่อ',S.students.length?'ลองเปลี่ยนตัวกรอง':'เพิ่มรายชื่อนักเรียนที่เมนู "ห้องเรา"')+'</div>')}
+function studentRow(r,x){const p=paidOf(r.id,x.id),st=p>=r.amt?'ok':p>0?'part':'no';return '<button class="item" data-act="payFor" data-rid="'+r.id+'" data-sid="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b><span class="sub money">'+(p?'จ่ายแล้ว '+fm(p)+(p<r.amt?' · ค้าง '+fm(r.amt-p):''):'ยังไม่จ่าย')+'</span></div><span class="tag '+st+'">'+(st==='ok'?'จ่ายแล้ว':st==='part'?'บางส่วน':'ค้าง')+'</span></button>'}
 
 function V_pay(){const rs=S.rounds;if(!payRid||!rs.find(r=>r.id===payRid))payRid=rs.length?rs[rs.length-1].id:null;const r=rs.find(x=>x.id===payRid);
- return hero({c:'green',back:'home',h:'รับเงิน',p:'เลือกรายการ แล้วแตะชื่อคนที่จ่าย',m:'wallet',pb:70})+
- '<div class="body" style="margin-top:0">'+(rs.length?'<div class="card plain"><label style="margin-top:0">รายการเก็บ</label><select id="payR" data-act="payR">'+rs.map(x=>'<option value="'+x.id+'"'+(x.id===payRid?' selected':'')+'>'+esc(x.title)+' ('+fm(x.amt)+')</option>').join('')+'</select></div>'+
+ return top('รับเงิน',{back:'home',sub:'เลือกรายการ แล้วแตะชื่อคนที่จ่าย'})+
+ (rs.length?'<div class="card"><label style="margin-top:0">รายการเก็บ</label><select id="payR" data-act="payR">'+rs.map(x=>'<option value="'+x.id+'"'+(x.id===payRid?' selected':'')+'>'+esc(x.title)+' ('+fm(x.amt)+')</option>').join('')+'</select></div>'+
  '<input type="text" class="search" id="qs" value="'+esc(q)+'" placeholder="ค้นหาชื่อ" autocomplete="off">'+
- (S.students.length?'<div class="list">'+S.students.filter(x=>!q||x.name.indexOf(q)>-1).sort((a,b)=>(paidOf(r.id,a.id)>=r.amt)-(paidOf(r.id,b.id)>=r.amt)).map(x=>{const p=paidOf(r.id,x.id),st=p>=r.amt?'ok':p>0?'part':'no';return '<button class="item" data-act="payFor" data-rid="'+r.id+'" data-sid="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b><span class="sub money">'+(p>=r.amt?'จ่ายครบแล้ว':'ค้าง '+fm(r.amt-p))+'</span></div><span class="tag '+st+'">'+(st==='ok'?'จ่ายแล้ว':st==='part'?'บางส่วน':'ค้าง')+'</span></button>'}).join('')+'</div>':empty('student','ยังไม่มีรายชื่อนักเรียน','',' <button class="btn p" data-act="go" data-v="cls">ไปเพิ่มรายชื่อ</button>')):empty('list','ยังไม่มีรายการเก็บเงิน','สร้างรายการก่อนจึงจะรับเงินได้','<button class="btn p" data-act="newRound">+ สร้างรายการเก็บ</button>'))+'</div>'}
+ (S.students.length?'<div class="list cols">'+S.students.filter(x=>!q||x.name.indexOf(q)>-1).sort((a,b)=>(paidOf(r.id,a.id)>=r.amt)-(paidOf(r.id,b.id)>=r.amt)).map(x=>{const p=paidOf(r.id,x.id),st=p>=r.amt?'ok':p>0?'part':'no';return '<button class="item" data-act="payFor" data-rid="'+r.id+'" data-sid="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b><span class="sub money">'+(p>=r.amt?'จ่ายครบแล้ว':'ค้าง '+fm(r.amt-p))+'</span></div><span class="tag '+st+'">'+(st==='ok'?'จ่ายแล้ว':st==='part'?'บางส่วน':'ค้าง')+'</span></button>'}).join('')+'</div>':'<div class="card">'+empty('student','ยังไม่มีรายชื่อนักเรียน','','<button class="btn p" data-act="go" data-v="cls">ไปเพิ่มรายชื่อ</button>')+'</div>')
+ :'<div class="card">'+empty('list','ยังไม่มีรายการเก็บเงิน','สร้างรายการก่อนจึงจะรับเงินได้','<button class="btn p" data-act="newRound">+ สร้างรายการเก็บ</button>')+'</div>')}
 
-function V_exp(){const out=spent();return hero({c:'orange',back:'home',h:'รายจ่าย',p:'จ่ายไปแล้ว '+fm(out)+' บาท',m:'receipt',pb:70})+
- '<div class="body" style="margin-top:0"><button class="cta" style="width:100%;margin:0 0 16px" data-act="newExp">+ บันทึกรายจ่าย</button>'+
- (S.exps.length?'<div class="list">'+S.exps.slice().sort((a,b)=>a.date<b.date?1:-1).map(txOut).join('')+'</div>':empty('receipt','ยังไม่มีรายจ่าย','บันทึกทุกครั้งที่ใช้เงินห้อง แนบใบเสร็จได้'))+'</div>'}
+function V_exp(){return top('รายจ่าย',{back:'home',sub:'จ่ายไปแล้ว '+fm(spent())+' บาท'})+
+ '<button class="cta" data-act="newExp">+ บันทึกรายจ่าย</button>'+
+ (S.exps.length?'<div class="list cols">'+S.exps.slice().sort((a,b)=>a.date<b.date?1:-1).map(txOut).join('')+'</div>':'<div class="card">'+empty('exp','ยังไม่มีรายจ่าย','บันทึกทุกครั้งที่ใช้เงินห้อง แนบใบเสร็จได้')+'</div>')}
 
-function V_cls(){const c=S.cls;return hero({logo:1,pill:esc(c.name),h:'ห้องเรา',p:S.students.length+' คน · '+esc(c.term||''),m:'school',pb:76})+
- '<div class="body" style="margin-top:0;padding-bottom:0"><div class="card pin"><b>รายงานและซิงค์ข้อมูล</b><div class="btns" style="margin-top:10px">'+
- '<button class="btn" data-act="shareSum">คัดลอกสรุปส่งไลน์</button><button class="btn" data-act="csv">ส่งออก CSV</button><button class="btn" data-act="printRep">พิมพ์รายงาน</button><button class="btn g" data-act="syncNow">ซิงค์ข้อมูลทันที</button><button class="btn" data-act="backup">สำรอง JSON</button><button class="btn" data-act="importJson">กู้คืน JSON</button></div><p class="sub" style="margin-top:8px">ข้อมูลเชื่อมต่อ Supabase ออนไลน์ตลอดเวลา (จุดสีเขียว = ปกติ)</p></div>'+
- '<h3>รายชื่อนักเรียน <a data-act="addStu">+ เพิ่ม</a></h3>'+(S.students.length?'<div class="list">'+S.students.map(x=>'<button class="item" data-act="editStu" data-id="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b></div><span class="sub">แก้ไข</span></button>').join('')+'</div>':empty('people','ยังไม่มีรายชื่อ','','<button class="btn p" data-act="addStu">+ เพิ่มรายชื่อ</button>'))+
- '<div class="btns" style="margin-bottom:14px"><button class="btn sm" data-act="editCls">แก้ไขข้อมูลห้อง</button><button class="btn sm" data-act="logout">ออกจากระบบ</button><button class="btn sm" style="color:#c24" data-act="wipe">ลบข้อมูลทั้งหมด</button></div></div>'}
+function V_cls(){const c=S.cls;return top('ห้องเรา',{sub:'ห้อง '+esc(c.name)+' · '+S.students.length+' คน · '+esc(c.term||'')})+
+ '<div class="section-title"><h3>รายงานและซิงค์ข้อมูล</h3></div><div class="grid">'+
+  tile('share','สรุป<br>ส่งไลน์','shareSum')+tile('file','ส่งออก<br>CSV','csv')+tile('print','พิมพ์<br>รายงาน','printRep')+tile('sync','ซิงค์<br>ทันที','syncNow')+
+  tile('backup','สำรอง<br>JSON','backup')+tile('restore','กู้คืน<br>JSON','importJson')+tile('edit','แก้ไข<br>ข้อมูลห้อง','editCls')+tile('logout','ออกจาก<br>ระบบ','logout')+
+ '</div><p class="hint" style="margin-top:0">ข้อมูลเชื่อมต่อ Supabase ออนไลน์ตลอดเวลา (จุดสีเขียว = ปกติ)</p>'+
+ '<div class="section-title"><h3>รายชื่อนักเรียน</h3><a data-act="addStu">+ เพิ่ม</a></div>'+
+ (S.students.length?'<div class="list cols">'+S.students.map(x=>'<button class="item" data-act="editStu" data-id="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b></div><span class="sub">แก้ไข</span></button>').join('')+'</div>':'<div class="card">'+empty('people','ยังไม่มีรายชื่อ','','<button class="btn p" data-act="addStu">+ เพิ่มรายชื่อ</button>')+'</div>')+
+ '<div class="btns" style="margin:8px 16px 16px"><button class="btn sm" style="color:var(--outInk)" data-act="wipe">ลบข้อมูลทั้งหมด</button></div>'}
 
 const VIEWS={login:V_login,loading:V_loading,setup:V_setup,home:V_home,rounds:V_rounds,round:V_round,pay:V_pay,exp:V_exp,cls:V_cls};
 const NAVV={home:1,rounds:1,round:1,pay:1,exp:1,cls:1};
 function draw(){
-  let activeView = view;
-  if(!isAuthed) activeView = 'login';
-  else if(isLoadingCloud) activeView = 'loading';
-  else if(!S.cls) activeView = 'setup';
-
-  const v=$('view');
-  v.innerHTML=VIEWS[activeView]();
-  const sn=!!NAVV[activeView];
-  v.className=sn?'':'noNav';
-  const nav=$('nav');
-  nav.className=sn?'':'hide';
-  const cur=activeView==='round'?'rounds':activeView;
-  nav.innerHTML=NAV.map(n=>'<button class="'+(n[1]==='plus'?'plus ':'')+(cur===n[0]?'on':'')+'" data-act="go" data-v="'+n[0]+'">'+(n[1]==='plus'?'<span>'+ICON.plus+'</span>':ICON[n[1]])+n[2]+'</button>').join('');
+  let av=view;
+  if(!isAuthed)av='login';else if(isLoadingCloud)av='loading';else if(!S.cls)av='setup';
+  const v=$('view');v.innerHTML=VIEWS[av]();
+  const sn=!!NAVV[av];v.className=sn?'':'noNav';
+  const nav=$('nav');nav.className=sn?'':'hide';
+  const cur=av==='round'?'rounds':av;
+  nav.innerHTML=NAV.map(n=>n[1]==='plus'
+    ?'<button class="tab scan'+(cur===n[0]?' on':'')+'" data-act="go" data-v="'+n[0]+'"><div class="bubble"><i>'+NAVIC.plus+'</i></div><span>'+n[2]+'</span></button>'
+    :'<button class="tab'+(cur===n[0]?' on':'')+'" data-act="go" data-v="'+n[0]+'">'+NAVIC[n[1]]+n[2]+'</button>').join('');
 }
 function go(v){view=v;q='';tab=0;draw();scrollTo(0,0)}
 
 /* ---------- sheets ---------- */
-function roundSheet(r){r=r||{title:'',amt:'',due:'',note:''};openSheet('<h2>'+(r.id?'แก้ไขรายการเก็บ':'สร้างรายการเก็บใหม่')+'</h2><label style="margin-top:0">ชื่อรายการ</label><input type="text" id="rt" value="'+esc(r.title)+'" placeholder="เช่น ค่ากิจกรรมเทอม 2" maxlength="60"><div class="row"><div><label>บาท/คน</label><input type="number" id="ra" inputmode="decimal" min="0" step="any" value="'+esc(r.amt)+'" placeholder="เช่น 150"></div><div><label>กำหนดส่ง</label><input type="date" id="rd" value="'+esc(r.due)+'"></div></div><label>หมายเหตุ</label><input type="text" id="rn" value="'+esc(r.note||'')+'" placeholder="ไม่ใส่ก็ได้" maxlength="100"><button class="cta inline" data-act="saveRound" data-id="'+(r.id||'')+'">บันทึก</button>'+(r.id?'<button class="cta inline ghost" style="color:#c24;margin-top:8px" data-act="delRound" data-id="'+r.id+'">ลบรายการนี้</button>':''))}
+function roundSheet(r){r=r||{title:'',amt:'',due:'',note:''};openSheet('<h2>'+(r.id?'แก้ไขรายการเก็บ':'สร้างรายการเก็บใหม่')+'</h2><label style="margin-top:0">ชื่อรายการ</label><input type="text" id="rt" value="'+esc(r.title)+'" placeholder="เช่น ค่ากิจกรรมเทอม 2" maxlength="60"><div class="row"><div><label>บาท/คน</label><input type="number" id="ra" inputmode="decimal" min="0" step="any" value="'+esc(r.amt)+'" placeholder="เช่น 150"></div><div><label>กำหนดส่ง</label><input type="date" id="rd" value="'+esc(r.due)+'"></div></div><label>หมายเหตุ</label><input type="text" id="rn" value="'+esc(r.note||'')+'" placeholder="ไม่ใส่ก็ได้" maxlength="100"><button class="cta inline" data-act="saveRound" data-id="'+(r.id||'')+'">บันทึก</button>'+(r.id?'<button class="cta inline danger" style="margin-top:8px" data-act="delRound" data-id="'+r.id+'">ลบรายการนี้</button>':''))}
 function paySheet(){const d=payDraft,s=S.students.find(x=>x.id===d.sid),r=S.rounds.find(x=>x.id===d.rid);if(!s||!r)return;
  const prev=S.pays.filter(p=>p.rid===r.id&&p.sid===s.id),paid=paidOf(r.id,s.id),rem=Math.max(0,r.amt-paid);if(d.amt==='')d.amt=rem||'';
  openSheet('<h2>'+esc(s.name)+'</h2><p class="sub">'+esc(r.title)+' · '+fm(r.amt)+' บาท · จ่ายแล้ว '+fm(paid)+' · ค้าง '+fm(rem)+'</p>'+
- (prev.length?'<div class="list" style="margin-top:10px">'+prev.map(p=>'<div class="item"><div class="ic">'+im('coin')+'</div><div class="nm"><b class="money">'+fm(p.amt)+' บาท</b><span class="sub">'+fd(p.date)+' · '+esc(p.method)+'</span></div>'+(p.slip?'<img class="thumb" data-act="viewPay" data-id="'+p.id+'" style="pointer-events:auto" src="'+p.slip+'" alt="">':'')+'<button class="sub" style="color:#c24" data-act="delPay" data-id="'+p.id+'">ลบ</button></div>').join('')+'</div>':'')+
+ (prev.length?'<div class="list" style="margin-top:10px">'+prev.map(p=>'<div class="item"><div class="ic">'+svg('coin')+'</div><div class="nm"><b class="money">'+fm(p.amt)+' บาท</b><span class="sub">'+fd(p.date)+' · '+esc(p.method)+'</span></div>'+(p.slip?'<img class="thumb" data-act="viewPay" data-id="'+p.id+'" src="'+p.slip+'" alt="">':'')+'<button class="sub" style="color:var(--outInk)" data-act="delPay" data-id="'+p.id+'">ลบ</button></div>').join('')+'</div>':'')+
  '<label>จำนวนเงินที่รับ (บาท)</label><input type="number" id="pa" inputmode="decimal" min="0" step="any" value="'+esc(d.amt)+'"><label>วิธีจ่าย</label><div class="chips">'+['เงินสด','โอน','อื่นๆ'].map(m=>'<button class="chip'+(d.method===m?' on':'')+'" data-act="method" data-v="'+m+'">'+m+'</button>').join('')+'</div><label>วันที่รับ</label><input type="date" id="pd" value="'+esc(d.date)+'">'+
  (d.slip?'<div class="photo"><img src="'+d.slip+'" alt="สลิป"><button data-act="rmSlip" aria-label="ลบรูป">✕</button></div>':'')+
- '<div class="actionrow"><button data-act="slipPhoto" data-cam="1">'+im('camera')+'ถ่ายสลิป</button><button data-act="slipPhoto">'+im('gallery')+'เลือกรูปสลิป</button></div><button class="cta inline" data-act="savePay">บันทึกรับเงิน</button>')}
+ '<div class="actionrow"><button data-act="slipPhoto" data-cam="1">'+svg('camera')+'ถ่ายสลิป</button><button data-act="slipPhoto">'+svg('gallery')+'เลือกรูปสลิป</button></div><button class="cta inline" data-act="savePay">บันทึกรับเงิน</button>')}
 function syncPay(){const a=$('pa'),p=$('pd');if(a)payDraft.amt=a.value;if(p)payDraft.date=p.value||TODAY()}
 function expSheet(){const d=expDraft;openSheet('<h2>บันทึกรายจ่าย</h2><label style="margin-top:0">รายการ</label><input type="text" id="et" value="'+esc(d.title)+'" placeholder="เช่น ซื้อกระดาษโปสเตอร์" maxlength="60"><div class="row"><div><label>จำนวนเงิน</label><input type="number" id="ea" inputmode="decimal" min="0" step="any" value="'+esc(d.amt)+'"></div><div><label>วันที่</label><input type="date" id="ed" value="'+esc(d.date)+'"></div></div><label>หมายเหตุ</label><input type="text" id="en" value="'+esc(d.note)+'" placeholder="ไม่ใส่ก็ได้" maxlength="100">'+
  (d.receipt?'<div class="photo"><img src="'+d.receipt+'" alt="ใบเสร็จ"><button data-act="rmRec" aria-label="ลบรูป">✕</button></div>':'')+
- '<div class="actionrow"><button data-act="expPhoto" data-cam="1">'+im('camera')+'ถ่ายใบเสร็จ</button><button data-act="expPhoto">'+im('gallery')+'เลือกรูป</button></div><button class="cta inline" data-act="saveExp">บันทึกรายจ่าย</button>')}
+ '<div class="actionrow"><button data-act="expPhoto" data-cam="1">'+svg('camera')+'ถ่ายใบเสร็จ</button><button data-act="expPhoto">'+svg('gallery')+'เลือกรูป</button></div><button class="cta inline" data-act="saveExp">บันทึกรายจ่าย</button>')}
 function syncExp(){const g=i=>($(i)||{}).value;if($('et')){expDraft.title=g('et');expDraft.amt=g('ea');expDraft.date=g('ed')||TODAY();expDraft.note=g('en')}}
-function stuSheet(s){openSheet('<h2>'+(s?'แก้ไขรายชื่อ':'เพิ่มรายชื่อนักเรียน')+'</h2>'+(s?'<div class="row"><div style="flex:0 0 90px"><label style="margin-top:0">เลขที่</label><input type="text" id="sno" value="'+esc(s.no)+'" maxlength="4"></div><div><label style="margin-top:0">ชื่อ</label><input type="text" id="snm" value="'+esc(s.name)+'" maxlength="60"></div></div><button class="cta inline" data-act="saveStu" data-id="'+s.id+'">บันทึก</button><button class="cta inline ghost" style="color:#c24;margin-top:8px" data-act="delStu" data-id="'+s.id+'">ลบคนนี้ (ประวัติการจ่ายจะถูกลบด้วย)</button>':'<label style="margin-top:0">วางรายชื่อ ชื่อละบรรทัด</label><textarea id="sbulk" style="min-height:150px" placeholder="สมชาย ใจดี&#10;สมหญิง รักเรียน"></textarea><button class="cta inline" data-act="saveBulk">เพิ่มรายชื่อ</button>'))}
+function stuSheet(s){openSheet('<h2>'+(s?'แก้ไขรายชื่อ':'เพิ่มรายชื่อนักเรียน')+'</h2>'+(s?'<div class="row"><div style="flex:0 0 90px"><label style="margin-top:0">เลขที่</label><input type="text" id="sno" value="'+esc(s.no)+'" maxlength="4"></div><div><label style="margin-top:0">ชื่อ</label><input type="text" id="snm" value="'+esc(s.name)+'" maxlength="60"></div></div><button class="cta inline" data-act="saveStu" data-id="'+s.id+'">บันทึก</button><button class="cta inline danger" style="margin-top:8px" data-act="delStu" data-id="'+s.id+'">ลบคนนี้ (ประวัติการจ่ายจะถูกลบด้วย)</button>':'<label style="margin-top:0">วางรายชื่อ ชื่อละบรรทัด</label><textarea id="sbulk" style="min-height:150px" placeholder="สมชาย ใจดี&#10;สมหญิง รักเรียน"></textarea><button class="cta inline" data-act="saveBulk">เพิ่มรายชื่อ</button>'))}
 function parseNames(t){return t.split(/\r?\n/).map(l=>l.replace(/^\s*\d+\s*[.)\-:]?\s*/,'').trim()).filter(Boolean)}
 
 /* ---------- actions ---------- */
 const A={
  login(){
-  const inp = $('pinCode');
-  const val = inp ? inp.value.trim() : '';
-  if(val === APP_PASSCODE){
-    isAuthed = true;
-    sessionStorage.setItem(AUTH_KEY, '1');
-    toast('เข้าสู่ระบบสำเร็จ');
-    loadFromCloud();
-  } else {
+  const inp=$('pinCode'),val=inp?inp.value.trim():'';
+  if(val===APP_PASSCODE){
+    isAuthed=true;try{sessionStorage.setItem(AUTH_KEY,'1')}catch(e){}
+    toast('เข้าสู่ระบบสำเร็จ');loadFromCloud();
+  }else{
     toast('รหัสผ่านไม่ถูกต้อง');
-    const card = $('loginCard');
-    if(card){
-      card.classList.remove('shake');
-      void card.offsetWidth;
-      card.classList.add('shake');
-    }
-    if(inp){ inp.value = ''; inp.focus(); }
+    const card=$('loginCard');if(card){card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake')}
+    if(inp){inp.value='';inp.focus()}
   }
  },
- logout(){
-  isAuthed = false;
-  sessionStorage.removeItem(AUTH_KEY);
-  closeSheet();
-  draw();
-  toast('ออกจากระบบแล้ว');
- },
- async syncNow(){
-  toast('กำลังซิงค์ข้อมูล...');
-  await loadFromCloud();
-  toast('ซิงค์ข้อมูลล่าสุดเรียบร้อย');
- },
+ logout(){isAuthed=false;try{sessionStorage.removeItem(AUTH_KEY)}catch(e){}closeSheet();draw();toast('ออกจากระบบแล้ว')},
+ async syncNow(){toast('กำลังซิงค์ข้อมูล...');await loadFromCloud();toast('ซิงค์ข้อมูลล่าสุดเรียบร้อย')},
  go(t){go(t.dataset.v)},closeSheet,
+ closeNotice(){const n=$('notice');if(n)n.remove()},
+ more(){openSheet('<div class="head"><h2>เพิ่มเติม</h2><button data-act="closeSheet" aria-label="ปิด">×</button></div><div class="grid">'+
+   tile('sync','ซิงค์<br>ทันที','syncNow',{close:1})+tile('backup','สำรอง<br>JSON','backup',{close:1})+tile('restore','กู้คืน<br>JSON','importJson',{close:1})+tile('edit','แก้ไข<br>ข้อมูลห้อง','editCls')+
+   tile('people','เพิ่ม<br>รายชื่อ','addStu')+tile('logout','ออกจาก<br>ระบบ','logout',{close:1})+tile('trash','ลบข้อมูล<br>ทั้งหมด','wipe',{close:1})+'</div>')},
  setup(){const n=$('sc').value.trim(),names=parseNames($('sr').value);if(!n)return toast('ใส่ชื่อห้องก่อนนะ');
   S.cls={name:n,term:$('st').value.trim(),treasurer:$('sn').value.trim()};S.students=names.map((x,i)=>({id:uid('s'),no:String(i+1),name:x}));save();view='home';confetti();draw()},
  newRound(){roundSheet()},
@@ -537,13 +580,13 @@ const A={
   S.pays.push({id:uid('p'),rid:payDraft.rid,sid:payDraft.sid,amt:a,method:payDraft.method,date:payDraft.date,slip:payDraft.slip});save();closeSheet();const r=S.rounds.find(x=>x.id===payDraft.rid);if(r&&stat(r).full===S.students.length)confetti();draw();toast('บันทึกรับเงินแล้ว')},
  delPay(t){if(!confirm('ลบรายการรับเงินนี้?'))return;S.pays=S.pays.filter(p=>p.id!==t.dataset.id);save();closeSheet();draw()},
  viewPay(t){const p=S.pays.find(x=>x.id===t.dataset.id);if(!p)return;const s=S.students.find(x=>x.id===p.sid),r=S.rounds.find(x=>x.id===p.rid);
-  openSheet('<h2>'+esc(s?s.name:'')+'</h2><p class="sub">'+esc(r?r.title:'')+' · '+fd(p.date)+' · '+esc(p.method)+'</p><div class="big in money" style="margin:6px 0">+'+fm(p.amt)+' บาท</div>'+(p.slip?'<img style="width:100%;border-radius:16px" src="'+p.slip+'" alt="สลิป">':'<p class="sub">ไม่ได้แนบสลิป</p>')+'<button class="cta inline ghost" style="color:#c24" data-act="delPay" data-id="'+p.id+'">ลบรายการนี้</button>')},
+  openSheet('<h2>'+esc(s?s.name:'')+'</h2><p class="sub">'+esc(r?r.title:'')+' · '+fd(p.date)+' · '+esc(p.method)+'</p><div class="big in money" style="margin:6px 0">+'+fm(p.amt)+' บาท</div>'+(p.slip?'<img style="width:100%;border-radius:16px" src="'+p.slip+'" alt="สลิป">':'<p class="sub">ไม่ได้แนบสลิป</p>')+'<button class="cta inline danger" data-act="delPay" data-id="'+p.id+'">ลบรายการนี้</button>')},
  newExp(){expDraft={title:'',amt:'',date:TODAY(),note:'',receipt:null};expSheet()},
  expPhoto(t){syncExp();askPhoto('exp',!!t.dataset.cam)},
  rmRec(){syncExp();expDraft.receipt=null;expSheet()},
  saveExp(){syncExp();const a=parseFloat(expDraft.amt);if(!expDraft.title.trim())return toast('ใส่ชื่อรายการก่อนนะ');if(!(a>0))return toast('ใส่จำนวนเงินก่อนนะ');
   S.exps.push({id:uid('e'),title:expDraft.title.trim(),amt:a,date:expDraft.date,note:expDraft.note,receipt:expDraft.receipt});save();closeSheet();draw();toast('บันทึกรายจ่ายแล้ว')},
- viewExp(t){const e=S.exps.find(x=>x.id===t.dataset.id);if(!e)return;openSheet('<h2>'+esc(e.title)+'</h2><p class="sub">'+fd(e.date)+(e.note?' · '+esc(e.note):'')+'</p><div class="big out money" style="margin:6px 0">-'+fm(e.amt)+' บาท</div>'+(e.receipt?'<img style="width:100%;border-radius:16px" src="'+e.receipt+'" alt="ใบเสร็จ">':'<p class="sub">ไม่ได้แนบใบเสร็จ</p>')+'<button class="cta inline ghost" style="color:#c24" data-act="delExp" data-id="'+e.id+'">ลบรายการนี้</button>')},
+ viewExp(t){const e=S.exps.find(x=>x.id===t.dataset.id);if(!e)return;openSheet('<h2>'+esc(e.title)+'</h2><p class="sub">'+fd(e.date)+(e.note?' · '+esc(e.note):'')+'</p><div class="big out money" style="margin:6px 0">-'+fm(e.amt)+' บาท</div>'+(e.receipt?'<img style="width:100%;border-radius:16px" src="'+e.receipt+'" alt="ใบเสร็จ">':'<p class="sub">ไม่ได้แนบใบเสร็จ</p>')+'<button class="cta inline danger" data-act="delExp" data-id="'+e.id+'">ลบรายการนี้</button>')},
  delExp(t){if(!confirm('ลบรายจ่ายนี้?'))return;S.exps=S.exps.filter(e=>e.id!==t.dataset.id);save();closeSheet();draw()},
  addStu(){stuSheet()},editStu(t){stuSheet(S.students.find(s=>s.id===t.dataset.id))},
  saveBulk(){const n=parseNames($('sbulk').value);if(!n.length)return toast('วางรายชื่อก่อนนะ');let k=S.students.length;n.forEach(x=>S.students.push({id:uid('s'),no:String(++k),name:x}));save();closeSheet();draw();toast('เพิ่ม '+n.length+' คนแล้ว')},
@@ -556,47 +599,39 @@ const A={
  csv(){const q2=s=>'"'+String(s).replace(/"/g,'""')+'"';const rows=[['เลขที่','ชื่อ'].concat(S.rounds.map(r=>r.title+' ('+r.amt+')'),['รวมจ่าย','ค้างรวม'])];
   S.students.forEach(s=>{let tot=0,rem=0;const cells=S.rounds.map(r=>{const p=paidOf(r.id,s.id);tot+=p;rem+=Math.max(0,r.amt-p);return p});rows.push([s.no,s.name].concat(cells,[tot,rem]))});
   rows.push([],['รับรวม',income()],['จ่ายรวม',spent()],['คงเหลือ',income()-spent()]);
-  const data='﻿'+rows.map(r=>r.map(q2).join(',')).join('\r\n');if(!download('เงินห้อง-'+S.cls.name+'.csv','text/csv;charset=utf-8',data))openSheet('<h2>คัดลอกข้อมูล CSV</h2><textarea style="min-height:220px">'+esc(data)+'</textarea>');else toast('ส่งออกไฟล์แล้ว')},
+  const data='\ufeff'+rows.map(r=>r.map(q2).join(',')).join('\r\n');if(!download('เงินห้อง-'+S.cls.name+'.csv','text/csv;charset=utf-8',data))openSheet('<h2>คัดลอกข้อมูล CSV</h2><textarea style="min-height:220px">'+esc(data)+'</textarea>');else toast('ส่งออกไฟล์แล้ว')},
  printRep(){const c=S.cls;$('printDoc').innerHTML='<h2>รายงานเงินห้อง '+esc(c.name)+'</h2><p>ภาคเรียน '+esc(c.term)+' · เหรัญญิก '+esc(c.treasurer)+' · ณ วันที่ '+fd(TODAY())+'</p><p>รับรวม '+fm(income())+' บาท · จ่ายรวม '+fm(spent())+' บาท · คงเหลือ <b>'+fm(income()-spent())+'</b> บาท</p>'+
   '<table><tr><th>เลขที่</th><th>ชื่อ</th>'+S.rounds.map(r=>'<th class="r">'+esc(r.title)+'<br>('+fm(r.amt)+')</th>').join('')+'<th class="r">ค้างรวม</th></tr>'+S.students.map(s=>{let rem=0;return '<tr><td>'+esc(s.no)+'</td><td>'+esc(s.name)+'</td>'+S.rounds.map(r=>{const p=paidOf(r.id,s.id);rem+=Math.max(0,r.amt-p);return '<td class="r">'+(p?fm(p):'-')+'</td>'}).join('')+'<td class="r">'+(rem?fm(rem):'-')+'</td></tr>'}).join('')+'</table>'+
   '<h3 style="margin-top:16px">รายจ่าย</h3><table><tr><th>วันที่</th><th>รายการ</th><th class="r">บาท</th></tr>'+(S.exps.length?S.exps.map(e=>'<tr><td>'+fd(e.date)+'</td><td>'+esc(e.title)+'</td><td class="r">'+fm(e.amt)+'</td></tr>').join(''):'<tr><td colspan="3">ไม่มีรายจ่าย</td></tr>')+'</table>';
   setTimeout(()=>{try{window.print()}catch(e){toast('เบราว์เซอร์นี้พิมพ์ไม่ได้ ใช้ส่งออก CSV แทนได้')}},100)},
  backup(){if(!download('สำรองเงินห้อง-'+S.cls.name+'-'+TODAY()+'.json','application/json',JSON.stringify(S)))openSheet('<h2>คัดลอกข้อมูลสำรอง</h2><textarea style="min-height:220px">'+esc(JSON.stringify(S))+'</textarea>');else toast('สำรองข้อมูลแล้ว')},
  importJson(){const f=$('fileJson');f.value='';f.click()},
- wipe(){if(!confirm('ลบข้อมูลห้อง รายชื่อ และประวัติทั้งหมดบน Supabase และในเครื่องนี้?'))return;S={cls:null,students:[],rounds:[],pays:[],exps:[]};save();view='setup';draw()},
- copyLink(){const u=location.href.split('#')[0];if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(()=>toast('คัดลอกลิงก์แล้ว'),()=>toast(u));else toast(u)}
+ wipe(){if(!confirm('ลบข้อมูลห้อง รายชื่อ และประวัติทั้งหมดบน Supabase และในเครื่องนี้?'))return;S=blank();save();view='setup';draw()}
 };
 $('fileJson').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const fr=new FileReader();
  fr.onload=()=>{try{const d=JSON.parse(fr.result);if(!d||!d.cls||!Array.isArray(d.students))throw 0;if(S.cls&&!confirm('กู้คืนจะแทนที่ข้อมูลปัจจุบันทั้งหมด ดำเนินการต่อ?'))return;
-  S=Object.assign({cls:null,students:[],rounds:[],pays:[],exps:[]},d);save();view='home';draw();toast('กู้คืนข้อมูลแล้ว')}catch(x){toast('ไฟล์สำรองไม่ถูกต้อง')}};fr.readAsText(f)});
+  S=Object.assign(blank(),d);save();view='home';draw();toast('กู้คืนข้อมูลแล้ว')}catch(x){toast('ไฟล์สำรองไม่ถูกต้อง')}};fr.readAsText(f)});
 
-document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;const f=A[t.dataset.act];if(f){e.preventDefault();f(t,e)}});
-document.addEventListener('change',e=>{
-  if(e.target.tagName==='SELECT' && e.target.dataset.act){
-    const fn=A[e.target.dataset.act];
-    if(fn) fn(e.target,e);
-  }
-});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;const f=A[t.dataset.act];if(f){e.preventDefault();if(t.dataset.close)closeSheet();f(t,e)}});
+document.addEventListener('change',e=>{if(e.target.tagName==='SELECT'&&e.target.dataset.act){const fn=A[e.target.dataset.act];if(fn)fn(e.target,e)}});
 document.addEventListener('input',e=>{
-  if(e.target && e.target.id==='qs'){
-    const start=e.target.selectionStart, end=e.target.selectionEnd;
-    q=e.target.value;
-    const y=window.scrollY;
-    draw();
-    const next=$('qs');
-    if(next){next.focus();try{next.setSelectionRange(start,end)}catch(_){}}
-    window.scrollTo(0,y);
+  if(e.target&&e.target.id==='qs'){
+    const start=e.target.selectionStart,end=e.target.selectionEnd;q=e.target.value;const y=window.scrollY;draw();
+    const next=$('qs');if(next){next.focus();try{next.setSelectionRange(start,end)}catch(_){}}window.scrollTo(0,y);
   }
 });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target&&e.target.id==='pinCode')A.login();
+  if(e.key==='Escape')closeSheet();
+});
 
-// Start the interface immediately; cloud sync runs only after login.
-try {
+try{
   draw();
-  if(isAuthed) loadFromCloud();
-} catch(err) {
+  if(isAuthed)loadFromCloud();
+}catch(err){
   console.error('Application startup error:',err);
   const v=$('view');
-  if(v) v.innerHTML='<div style="padding:28px;font-family:Prompt,sans-serif"><h2>เปิดระบบไม่สำเร็จ</h2><p>เกิดข้อผิดพลาดระหว่างเริ่มต้นระบบ กรุณารีเฟรชหน้าเว็บ หรือตรวจสอบ Console</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px">'+String(err && err.message || err)+'</pre></div>';
+  if(v)v.innerHTML='<div style="padding:28px"><h2>เปิดระบบไม่สำเร็จ</h2><p>เกิดข้อผิดพลาดระหว่างเริ่มต้นระบบ กรุณารีเฟรชหน้าเว็บ หรือตรวจสอบ Console</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px">'+String(err&&err.message||err)+'</pre></div>';
 }
 </script>
 </body>
