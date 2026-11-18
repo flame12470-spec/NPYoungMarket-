@@ -428,7 +428,7 @@ function download(name,type,data){try{const b=new Blob([data],{type:type}),u=URL
 let view='home',curR=null,tab=0,payRid=null,q='',payDraft={rid:null,sid:null,amt:'',method:'เงินสด',date:TODAY(),slip:null},expDraft={title:'',amt:'',date:TODAY(),note:'',receipt:null};
 const NAV=[['home','home','หน้าแรก'],['rounds','list','รายการเก็บ'],['pay','plus','รับเงิน'],['exp','out','รายจ่าย'],['cls','cls','ห้องเรา']];
 const dotHtml=()=>'<span class="sync-dot '+(syncState==='busy'?'busy':syncState==='err'?'err':'')+'" title="สถานะเชื่อมต่อ Supabase"></span>';
-const top=(t,o)=>{o=o||{};return '<div class="topbar">'+(o.back?'<button class="icon-btn" data-act="go" data-v="'+o.back+'" aria-label="กลับ">‹</button>':'')+'<h1>'+(o.brand?'<span class="brand-dot"></span>':'')+t+'</h1><div class="actions">'+dotHtml()+(o.right||'')+'</div></div>'+(o.sub?'<p class="topsub">'+o.sub+'</p>':'')};
+const pageTop=(t,o)=>{o=o||{};return '<div class="topbar">'+(o.back?'<button class="icon-btn" data-act="go" data-v="'+o.back+'" aria-label="กลับ">‹</button>':'')+'<h1>'+(o.brand?'<span class="brand-dot"></span>':'')+t+'</h1><div class="actions">'+dotHtml()+(o.right||'')+'</div></div>'+(o.sub?'<p class="topsub">'+o.sub+'</p>':'')};
 const empty=(i,t,s,b)=>'<div class="empty">'+svg(i)+'<b>'+t+'</b><p>'+(s||'')+'</p>'+(b||'')+'</div>';
 const tile=(ic,label,act,o)=>{o=o||{};return '<button class="tile" data-act="'+act+'"'+(o.v?' data-v="'+o.v+'"':'')+(o.close?' data-close="1"':'')+'>'+(o.isNew?'<span class="tag-new">ใหม่</span>':'')+svg(ic)+'<span>'+label+'</span></button>'};
 
@@ -458,7 +458,7 @@ function V_home(){
  const first=act[0],fs=first?stat(first):null;
  const banner=first?'<button class="banner" data-act="openRound" data-id="'+first.id+'"><small>กำลังเก็บ · กำหนด '+fd(first.due)+'</small><h2>'+esc(first.title)+'</h2><div class="bar"><i style="width:'+fs.pct+'%"></i></div><small>จ่ายแล้ว '+fs.full+'/'+fs.n+' คน · เก็บได้ <span class="money">'+fm(fs.got)+'</span> จาก '+fm(fs.target)+' บาท</small><div class="circle"></div></button>'
   :'<button class="banner" data-act="newRound"><small>'+(S.rounds.length?'ทุกคนจ่ายครบทุกรายการแล้ว 🎉':'ยังไม่มีรายการเก็บเงิน')+'</small><h2>+ สร้างรายการเก็บเงินใหม่</h2><small>ค่าเทอม ค่ากิจกรรม ค่าถ่ายเอกสาร ฯลฯ</small><div class="circle"></div></button>';
- return top('เงินห้อง',{brand:1})+
+ return pageTop('เงินห้อง',{brand:1})+
  '<div class="home-grid">'+notice+
  '<div class="profile-card"><div class="profile-row"><div class="avatar">'+esc((c.name||'?').slice(0,3))+'</div><div class="info"><div class="name">ห้อง '+esc(c.name)+'</div><span class="sub">ภาคเรียน '+esc(c.term||'-')+' · เหรัญญิก '+esc(c.treasurer||'-')+'</span></div><button class="switch-btn" data-act="syncNow" aria-label="ซิงค์ข้อมูล">⇆</button></div>'+
  '<div class="chips2"><div class="chip2 hl"><small>เงินคงเหลือ</small><b class="money '+(bal<0?'out':'')+'">'+fm(bal)+'</b></div><div class="chip2"><small>ค้างเก็บรวม</small><b class="money">'+fm(owed)+'</b></div><div class="chip2"><small>รับรวม</small><b class="money in">+'+fm(inc)+'</b></div><div class="chip2"><small>จ่ายรวม</small><b class="money out">-'+fm(out)+'</b></div></div>'+
@@ -476,14 +476,14 @@ function txIn(p){const s=S.students.find(x=>x.id===p.sid),r=S.rounds.find(x=>x.i
 function txOut(e){return '<button class="item" data-act="viewExp" data-id="'+e.id+'"><div class="ic">'+(e.receipt?'<img src="'+e.receipt+'" alt="">':svg('exp'))+'</div><div class="nm"><b>'+esc(e.title)+'</b><span class="sub">'+fd(e.date)+'</span></div><span class="amt out money">-'+fm(e.amt)+'</span></button>'}
 function rcardHtml(r){const s=stat(r);return '<button class="card rcard fade" data-act="openRound" data-id="'+r.id+'"><div class="top"><div><b>'+esc(r.title)+'</b><span class="sub">'+fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due)+'</span></div>'+(s.over&&s.full<s.n?'<span class="tag no">เลยกำหนด</span>':s.full===s.n&&s.n?'<span class="tag ok">ครบแล้ว</span>':'<span class="tag due">กำลังเก็บ</span>')+'</div><div class="bar"><i style="width:'+s.pct+'%"></i></div><div class="sub">จ่ายแล้ว '+s.full+'/'+s.n+' คน · เก็บได้ <span class="money">'+fm(s.got)+'</span> จาก '+fm(s.target)+'</div></button>'}
 
-function V_rounds(){return top('รายการเก็บเงิน',{back:'home',sub:'ค่าเทอม ค่ากิจกรรม ค่าถ่ายเอกสาร ฯลฯ'})+
+function V_rounds(){return pageTop('รายการเก็บเงิน',{back:'home',sub:'ค่าเทอม ค่ากิจกรรม ค่าถ่ายเอกสาร ฯลฯ'})+
  '<button class="cta" data-act="newRound">+ สร้างรายการเก็บใหม่</button>'+
  (S.rounds.length?'<div class="cards-grid">'+S.rounds.slice().reverse().map(rcardHtml).join('')+'</div>':'<div class="card">'+empty('list','ยังไม่มีรายการเก็บเงิน','กดปุ่มด้านบนเพื่อสร้างรายการแรก')+'</div>')}
 
 function V_round(){const r=S.rounds.find(x=>x.id===curR);if(!r){view='rounds';return V_rounds()}
  const s=stat(r);let list=S.students.filter(x=>!q||x.name.indexOf(q)>-1);
  if(tab===1)list=list.filter(x=>paidOf(r.id,x.id)<r.amt);if(tab===2)list=list.filter(x=>paidOf(r.id,x.id)>=r.amt);
- return top(esc(r.title),{back:'rounds',sub:fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due)})+
+ return pageTop(esc(r.title),{back:'rounds',sub:fm(r.amt)+' บาท/คน · กำหนด '+fd(r.due)})+
  '<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><b>เก็บได้ <span class="money">'+fm(s.got)+'</span> / '+fm(s.target)+'</b><span class="sub">'+s.pct+'%</span></div><div class="bar"><i style="width:'+s.pct+'%"></i></div><div class="btns" style="margin-top:8px"><button class="btn sm" data-act="copyUnpaid">คัดลอกรายชื่อคนค้าง</button><button class="btn sm" data-act="editRound">แก้ไข</button></div></div>'+
  '<div class="tabs">'+['ทั้งหมด ('+s.n+')','ค้าง ('+(s.n-s.full)+')','จ่ายแล้ว ('+s.full+')'].map((t,i)=>'<button class="'+(tab===i?'on':'')+'" data-act="tab" data-v="'+i+'">'+t+'</button>').join('')+'</div>'+
  '<input type="text" class="search" id="qs" value="'+esc(q)+'" placeholder="ค้นหาชื่อ" autocomplete="off">'+
@@ -491,17 +491,17 @@ function V_round(){const r=S.rounds.find(x=>x.id===curR);if(!r){view='rounds';re
 function studentRow(r,x){const p=paidOf(r.id,x.id),st=p>=r.amt?'ok':p>0?'part':'no';return '<button class="item" data-act="payFor" data-rid="'+r.id+'" data-sid="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b><span class="sub money">'+(p?'จ่ายแล้ว '+fm(p)+(p<r.amt?' · ค้าง '+fm(r.amt-p):''):'ยังไม่จ่าย')+'</span></div><span class="tag '+st+'">'+(st==='ok'?'จ่ายแล้ว':st==='part'?'บางส่วน':'ค้าง')+'</span></button>'}
 
 function V_pay(){const rs=S.rounds;if(!payRid||!rs.find(r=>r.id===payRid))payRid=rs.length?rs[rs.length-1].id:null;const r=rs.find(x=>x.id===payRid);
- return top('รับเงิน',{back:'home',sub:'เลือกรายการ แล้วแตะชื่อคนที่จ่าย'})+
+ return pageTop('รับเงิน',{back:'home',sub:'เลือกรายการ แล้วแตะชื่อคนที่จ่าย'})+
  (rs.length?'<div class="card"><label style="margin-top:0">รายการเก็บ</label><select id="payR" data-act="payR">'+rs.map(x=>'<option value="'+x.id+'"'+(x.id===payRid?' selected':'')+'>'+esc(x.title)+' ('+fm(x.amt)+')</option>').join('')+'</select></div>'+
  '<input type="text" class="search" id="qs" value="'+esc(q)+'" placeholder="ค้นหาชื่อ" autocomplete="off">'+
  (S.students.length?'<div class="list cols">'+S.students.filter(x=>!q||x.name.indexOf(q)>-1).sort((a,b)=>(paidOf(r.id,a.id)>=r.amt)-(paidOf(r.id,b.id)>=r.amt)).map(x=>{const p=paidOf(r.id,x.id),st=p>=r.amt?'ok':p>0?'part':'no';return '<button class="item" data-act="payFor" data-rid="'+r.id+'" data-sid="'+x.id+'"><span class="no">'+esc(x.no)+'</span><div class="nm"><b>'+esc(x.name)+'</b><span class="sub money">'+(p>=r.amt?'จ่ายครบแล้ว':'ค้าง '+fm(r.amt-p))+'</span></div><span class="tag '+st+'">'+(st==='ok'?'จ่ายแล้ว':st==='part'?'บางส่วน':'ค้าง')+'</span></button>'}).join('')+'</div>':'<div class="card">'+empty('student','ยังไม่มีรายชื่อนักเรียน','','<button class="btn p" data-act="go" data-v="cls">ไปเพิ่มรายชื่อ</button>')+'</div>')
  :'<div class="card">'+empty('list','ยังไม่มีรายการเก็บเงิน','สร้างรายการก่อนจึงจะรับเงินได้','<button class="btn p" data-act="newRound">+ สร้างรายการเก็บ</button>')+'</div>')}
 
-function V_exp(){return top('รายจ่าย',{back:'home',sub:'จ่ายไปแล้ว '+fm(spent())+' บาท'})+
+function V_exp(){return pageTop('รายจ่าย',{back:'home',sub:'จ่ายไปแล้ว '+fm(spent())+' บาท'})+
  '<button class="cta" data-act="newExp">+ บันทึกรายจ่าย</button>'+
  (S.exps.length?'<div class="list cols">'+S.exps.slice().sort((a,b)=>a.date<b.date?1:-1).map(txOut).join('')+'</div>':'<div class="card">'+empty('exp','ยังไม่มีรายจ่าย','บันทึกทุกครั้งที่ใช้เงินห้อง แนบใบเสร็จได้')+'</div>')}
 
-function V_cls(){const c=S.cls;return top('ห้องเรา',{sub:'ห้อง '+esc(c.name)+' · '+S.students.length+' คน · '+esc(c.term||'')})+
+function V_cls(){const c=S.cls;return pageTop('ห้องเรา',{sub:'ห้อง '+esc(c.name)+' · '+S.students.length+' คน · '+esc(c.term||'')})+
  '<div class="section-title"><h3>รายงานและซิงค์ข้อมูล</h3></div><div class="grid">'+
   tile('share','สรุป<br>ส่งไลน์','shareSum')+tile('file','ส่งออก<br>CSV','csv')+tile('print','พิมพ์<br>รายงาน','printRep')+tile('sync','ซิงค์<br>ทันที','syncNow')+
   tile('backup','สำรอง<br>JSON','backup')+tile('restore','กู้คืน<br>JSON','importJson')+tile('edit','แก้ไข<br>ข้อมูลห้อง','editCls')+tile('logout','ออกจาก<br>ระบบ','logout')+
